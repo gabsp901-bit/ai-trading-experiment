@@ -3,6 +3,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Open AI Trading Experiment — watch an AI trade, every trade public</title>
 <meta name="description" content="A live, fully transparent experiment: an autonomous AI trades a simulated paper account under strict risk rules. Every trade, statistic, and failure is published. Simulated money — not financial advice.">
+<link rel="canonical" href="https://gabsp901-bit.github.io/ai-trading-experiment/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#129514;</text></svg>">
+<meta property="og:site_name" content="The Open AI Trading Experiment">
+<meta property="og:title" content="The Open AI Trading Experiment">
+<meta property="og:description" content="A live, fully transparent experiment: an autonomous AI trades a simulated paper account under strict, frozen risk rules. Every trade, statistic, and failure is published. Simulated money — not financial advice.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://gabsp901-bit.github.io/ai-trading-experiment/">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
@@ -71,8 +79,10 @@ background:rgba(251,191,36,.12);color:var(--amb);font-weight:700;font-size:12px;
 <div class="wrap"><nav>
   <a class="brand" href="index.html">The Open <span>AI Trading</span> Experiment</a>
   <a class="lnk" href="index.html#results">Live Results</a>
+  <a class="lnk" href="journal.html">Journal</a>
   <a class="lnk" href="index.html#strategy">The Strategy</a>
-  <a class="lnk" href="index.html#method">The Method</a>
+  <a class="lnk" href="about.html">About</a>
+  <a class="lnk" href="faq.html">FAQ</a>
   <a class="lnk" href="disclaimer.html">Disclaimer &amp; Terms</a>
   <a class="lnk" href="privacy.html">Privacy</a>
 </nav></div>
@@ -237,7 +247,7 @@ U.S. market session &middot; Contact: via
 <a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
 </div></footer>
 <script>
-const D = {"generated": "2026-06-11 21:08", "window": {"start": "2026-06-12", "days_done": 0, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [], "daily_pnl": [], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [], "feed_date": null};
+const D = {"generated": "2026-06-11 21:21", "window": {"start": "2026-06-12", "days_done": 0, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [], "daily_pnl": [], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [], "feed_date": null};
 const $ = id => document.getElementById(id);
 const fmt$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2}));
 $('generated').textContent = D.generated;

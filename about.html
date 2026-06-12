@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacy Policy — The Open AI Trading Experiment</title>
-<meta name="description" content="Privacy policy: what this static site collects (nothing itself), hosting, advertising cookies and opt-outs, and your rights.">
-<link rel="canonical" href="https://gabsp901-bit.github.io/ai-trading-experiment/privacy.html">
+<title>About — The Open AI Trading Experiment</title>
+<meta name="description" content="Why this experiment exists, how the AI trading system is built, why the money is simulated, and what an honest result looks like.">
+<link rel="canonical" href="https://gabsp901-bit.github.io/ai-trading-experiment/about.html">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#129514;</text></svg>">
 <meta property="og:site_name" content="The Open AI Trading Experiment">
 <meta property="og:title" content="The Open AI Trading Experiment">
 <meta property="og:description" content="A live, fully transparent experiment: an autonomous AI trades a simulated paper account under strict, frozen risk rules. Every trade, statistic, and failure is published. Simulated money — not financial advice.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://gabsp901-bit.github.io/ai-trading-experiment/privacy.html">
+<meta property="og:url" content="https://gabsp901-bit.github.io/ai-trading-experiment/about.html">
 <meta name="twitter:card" content="summary">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 <style>
@@ -54,7 +54,7 @@ ul{padding-left:22px}li{margin:5px 0}
  .doc{max-width:840px;margin:0 auto;padding:30px 24px 10px}
 .doc h1{font-size:27px;margin-bottom:6px}.doc h2{margin:30px 0 10px;font-size:18px}
 .doc p,.doc li{color:#c2c9d8;font-size:14px}.doc .upd{color:var(--mut);font-size:12.5px}
-</style></head><body>
+.doc p{margin:0 0 12px}</style></head><body>
 <div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
 <div class="wrap"><nav>
   <a class="brand" href="index.html">The Open <span>AI Trading</span> Experiment</a>
@@ -67,58 +67,72 @@ ul{padding-left:22px}li{margin:5px 0}
   <a class="lnk" href="privacy.html">Privacy</a>
 </nav></div>
 <div class="doc">
-<h1>Privacy Policy</h1>
-<p class="upd">Last updated: 2026-06-11.</p>
 
-<h2>1. What this site collects</h2>
-<p>This is a static website. It has no accounts, no logins, no forms, and it
-does not itself collect, store, or sell personal information. The site's own
-data &mdash; the trades and statistics &mdash; concern a simulated computer
-account, not any person.</p>
+<h1>About the experiment</h1>
+<p class="upd">Why this site exists, who runs it, and what it is trying to find out.</p>
 
-<h2>2. Hosting</h2>
-<p>The site is hosted on GitHub Pages. GitHub may log standard technical data
-(such as IP addresses) for security and operational purposes; see
-<a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="nofollow">GitHub's
-privacy statement</a>.</p>
+<h2>The question</h2>
+<p>There is no shortage of claims about AI and trading. What there is a
+shortage of is <i>evidence you can inspect</i>. Backtests are quietly curated.
+Track records are self-reported. Social media shows you the winning screenshots
+and deletes the losers. So we asked a narrower, more honest question: <b>if you
+give an AI a fixed set of trading rules, a simulated account, and no ability to
+bend its own risk limits &mdash; what actually happens?</b> Not in a backtest.
+Forward, in real market conditions, one day at a time, in public.</p>
 
-<h2>3. Advertising and cookies</h2>
-<p>This site may display advertisements served by third-party networks (for
-example, Google AdSense). Ad networks may use cookies, web beacons, or similar
-technologies &mdash; including, where permitted, personalized-advertising
-identifiers &mdash; to serve and measure ads:</p>
+<h2>The setup</h2>
+<p>The system has two halves. A <b>scanner</b> runs before the U.S. market
+opens: it screens thousands of small-cap stocks for a specific momentum pattern
+(the five "pillars" described on the <a href="index.html#strategy">strategy
+section</a>), and a large language model reviews the survivors for a real news
+catalyst. An <b>executor</b> then trades the qualifying names on a simulated
+$4,300 paper account through the session &mdash; sizing every position to risk
+exactly 1% of equity, attaching a stop to every entry the instant it fills,
+liquidating everything if the day reaches &minus;6%, and going flat before the
+close, every day, no exceptions.</p>
+<p>The executor's risk rules are <b>frozen</b>: the code paths that size
+positions, place stops, and trip the circuit breaker cannot be edited during
+the evaluation window without resetting the experiment to day zero. That rule
+exists so the thing being measured stays still while it is being measured.</p>
+
+<h2>Why simulated money?</h2>
+<p>Because the first question is not "can it get rich" &mdash; it is "does it
+follow its own rules under fire, and do the rules have positive expectancy at
+all?" Running that test with real capital would add risk without adding
+information. The simulation is deliberately <i>pessimistic</i>: entries pay the
+ask plus a tick, stops fill worse than their trigger price, and oversized
+orders only partially fill. If the system cannot make hypothetical money under
+hostile assumptions, it has no business asking for real money. (And if it can,
+that is evidence &mdash; not proof. The <a href="disclaimer.html">disclaimer</a>
+spells out exactly how far simulated results can and cannot be trusted.)</p>
+
+<h2>What "open" means here</h2>
 <ul>
-<li>Google and its partners may use advertising cookies to serve ads based on
-your visits to this and other sites. You can opt out of personalized
-advertising at <a href="https://adssettings.google.com" rel="nofollow">Google Ads
-Settings</a> or via <a href="https://optout.aboutads.info" rel="nofollow">aboutads.info</a>.</li>
-<li>Where required (e.g., EEA/UK), a consent banner will be shown before any
-non-essential cookies are set, and personalized ads will not be served without
-consent.</li>
+<li><b>The strategy is published in full</b> &mdash; entry pillars, sizing,
+stops, breaker, time rules. No secret sauce, no "DM me for the indicator."</li>
+<li><b>The pass/fail criteria were registered before the first trade</b> &mdash;
+three gates covering mechanical reliability, risk-rule fidelity, and economics.
+They are on the <a href="index.html#method">method section</a>.</li>
+<li><b>Losses and malfunctions are published</b> with the same prominence as
+wins, including a classified incident log of the software's own failures.</li>
+<li><b>The data updates automatically</b> after every session &mdash; no human
+edits the record.</li>
 </ul>
-<p>This site's operators do not receive or store the data collected by ad
-networks beyond aggregate, non-identifying reporting.</p>
 
-<h2>4. Third-party content</h2>
-<p>Pages load fonts and chart libraries from CDNs (Google Fonts, jsDelivr);
-those providers may log technical request data per their own policies.</p>
+<h2>Who is behind this</h2>
+<p>The experiment is run by an independent developer as a personal research
+project, with the AI components built on commercially available large language
+models. Nobody involved is a registered investment adviser or broker-dealer,
+and nothing here is advice &mdash; see the
+<a href="disclaimer.html">disclaimer &amp; terms</a>. The site may carry
+advertising to cover its costs; advertisers get no say in anything.</p>
 
-<h2>5. Your rights</h2>
-<p>Depending on your jurisdiction (GDPR, UK GDPR, CCPA/CPRA, etc.) you may have
-rights regarding personal data held by the third parties above &mdash; exercise
-them directly with those providers, since this site holds none. California
-residents: this site does not sell or share personal information as defined by
-the CCPA/CPRA.</p>
-
-<h2>6. Children</h2>
-<p>This site is not directed to children under 13 (or the applicable age in
-your jurisdiction) and knowingly collects no data from them.</p>
-
-<h2>7. Contact &amp; changes</h2>
-<p>Questions: open an issue at
-<a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">the
-site's GitHub repository</a>. This policy may be updated; the date above
-governs.</p>
+<h2>What happens at the end</h2>
+<p>When the evaluation window completes, the result is published either way:
+<b>GO</b> (all three gates passed) or <b>NO-GO</b> (anything failed), together
+with the full trade log it was judged on. A NO-GO is not a failure of the
+experiment &mdash; it <i>is</i> the experiment. Either outcome becomes the
+baseline for whatever question gets asked next.</p>
 </div>
 <footer><div class="wrap">
 <p><strong>The Open AI Trading Experiment</strong> &mdash; a public research
