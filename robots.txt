@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gabsp901-bit.github.io/ai-trading-experiment/sitemap.xml
+Sitemap: https://mayflytrades.com/sitemap.xml
