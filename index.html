@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Open AI Trading Experiment — watch an AI trade, every trade public</title>
+<meta name="description" content="A live, fully transparent experiment: an autonomous AI trades a simulated paper account under strict risk rules. Every trade, statistic, and failure is published. Simulated money — not financial advice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{--bg:#0a0e16;--card:#111726;--card2:#0e1420;--line:rgba(255,255,255,.07);
+--txt:#e6eaf2;--mut:#8b93a7;--grn:#34d399;--red:#f87171;--amb:#fbbf24;--acc:#6ee7ff}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
+color:var(--txt);font:15px/1.6 Inter,system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.simbanner{position:sticky;top:0;z-index:50;background:#3b2f0a;border-bottom:1px solid #6b5618;
+color:#fde68a;text-align:center;font-weight:600;font-size:13px;padding:8px 16px}
+nav{display:flex;gap:22px;align-items:center;padding:18px 0;flex-wrap:wrap}
+nav .brand{font-weight:800;font-size:17px;color:var(--txt);letter-spacing:.2px}
+nav .brand span{color:var(--acc)}
+nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px}
+nav a.lnk:hover{color:var(--txt);text-decoration:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+h1{font-size:34px;line-height:1.2;font-weight:800}
+h2{font-size:21px;font-weight:700;margin:0 0 14px}
+h3{font-size:15px;font-weight:600;margin:18px 0 6px}
+p.mut,li.mut,.mut{color:var(--mut)}
+section{margin:34px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--mut);text-align:left;font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+.chip.g{background:rgba(52,211,153,.12);color:var(--grn)}
+.chip.r{background:rgba(248,113,113,.12);color:var(--red)}
+.chip.a{background:rgba(251,191,36,.12);color:var(--amb)}
+.chip.b{background:rgba(110,231,255,.10);color:var(--acc)}
+.grn{color:var(--grn)}.red{color:var(--red)}.amb{color:var(--amb)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 40px;
+color:var(--mut);font-size:12.5px}
+footer p{margin:0 0 8px}
+.legalbox{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:16px 18px;font-size:12.5px;color:var(--mut);margin:12px 0}
+ul{padding-left:22px}li{margin:5px 0}
+@media(max-width:760px){h1{font-size:26px}body{font-size:14px}}
+
+.hero{padding:46px 0 8px}
+.hero .tag{display:inline-block;margin-bottom:14px;padding:4px 12px;border-radius:99px;
+background:rgba(251,191,36,.12);color:var(--amb);font-weight:700;font-size:12px;letter-spacing:.6px}
+.hero p.lead{color:var(--mut);max-width:760px;margin:14px 0 0;font-size:16.5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:26px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi .l{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .v{font-size:22px;font-weight:800;margin-top:3px}
+.kpi .s{font-size:11.5px;color:var(--mut);margin-top:2px}
+.progress{height:8px;background:var(--card2);border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--grn));border-radius:99px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.empty{color:var(--mut);text-align:center;padding:26px 10px;font-size:13px}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.pillar{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.pillar b{display:block;margin-bottom:4px}
+.pillar span{color:var(--mut);font-size:12.5px}
+.rule{display:flex;gap:10px;margin:9px 0;font-size:13.5px}
+.rule b{color:var(--acc);min-width:130px;font-weight:600}
+</style></head><body>
+<div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
+<div class="wrap"><nav>
+  <a class="brand" href="index.html">The Open <span>AI Trading</span> Experiment</a>
+  <a class="lnk" href="index.html#results">Live Results</a>
+  <a class="lnk" href="index.html#strategy">The Strategy</a>
+  <a class="lnk" href="index.html#method">The Method</a>
+  <a class="lnk" href="disclaimer.html">Disclaimer &amp; Terms</a>
+  <a class="lnk" href="privacy.html">Privacy</a>
+</nav></div>
+<div class="wrap">
+
+<div class="hero">
+  <span class="tag">LIVE EXPERIMENT &middot; SIMULATED CAPITAL</span>
+  <h1>Can an AI trade by its own rules?<br>Watch it try &mdash; every trade public.</h1>
+  <p class="lead">An autonomous AI system scans U.S. small-cap momentum every
+  market morning, sizes its own positions, places its own stops, and shuts
+  itself down when it loses too much &mdash; on a <b>simulated $4,300 paper
+  account</b>. This site is the unedited lab notebook: the strategy is fully
+  disclosed below, the validation criteria were registered before the first
+  trade, and losses are published with the same prominence as wins.</p>
+</div>
+
+<section id="results">
+  <h2>Live results <span class="mut" style="font-weight:400;font-size:13px">
+  &mdash; updated after each session &middot; last build <span id="generated"></span> ET</span></h2>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="grid2">
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; trading days</div>
+        <div class="progress"><i id="pbDays"></i></div>
+        <div style="font-size:12.5px" id="pbDaysTxt"></div>
+      </div>
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; completed trades</div>
+        <div class="progress"><i id="pbTrades"></i></div>
+        <div style="font-size:12.5px" id="pbTradesTxt"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="card"><h2>Equity curve <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="eq" height="220"></canvas></div>
+    <div class="card"><h2>Daily P&amp;L <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="pnl" height="220"></canvas></div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><h2>Open positions</h2><div id="openT"></div></div>
+    <div class="card"><h2>Today's candidate queue</h2><div id="candT"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px"><h2>Trade history
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; every closed trade, unedited</span></h2>
+    <div id="histT" style="overflow-x:auto"></div></div>
+
+  <div class="card" style="margin-top:14px"><h2>Incident log
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; we publish our failures too</span></h2>
+    <div id="incT"></div></div>
+
+  <div class="legalbox">All figures above are <b>hypothetical, simulated
+  results</b> produced by a computer model with deliberately pessimistic fill
+  assumptions and delayed market data. They are not real trades, involve no
+  real money, and do not represent returns any person obtained or could have
+  obtained. See the full <a href="disclaimer.html">Disclaimer</a>.</div>
+</section>
+
+<section id="strategy">
+  <h2>The strategy &mdash; fully open</h2>
+  <p class="mut" style="max-width:820px">Nothing is hidden: this is the complete
+  rule set the AI operates under. It targets small-cap "gap and go" momentum
+  &mdash; thin, fast, dangerous stocks &mdash; precisely because that regime
+  punishes sloppy risk management quickly, which makes it a good stress test.
+  <b>Openly publishing a strategy means anyone can copy it; that is the
+  point of the experiment, and also your warning &mdash; these are not trade
+  recommendations.</b></p>
+
+  <h3>Entry: a stock must pass all five pillars on the morning scan</h3>
+  <div class="pillars">
+    <div class="pillar"><b>1 &middot; Big gap</b><span>Up &ge;10% on the day
+      (preference &ge;30%). Momentum must already be proven, not predicted.</span></div>
+    <div class="pillar"><b>2 &middot; Real volume</b><span>Relative volume &ge;5&times;
+      its average. Crowds, not ghosts.</span></div>
+    <div class="pillar"><b>3 &middot; Catalyst</b><span>An identifiable news
+      catalyst (earnings, FDA, contract&hellip;), screened by an LLM.</span></div>
+    <div class="pillar"><b>4 &middot; Price band</b><span>$2&ndash;$20 share price.
+      Low enough to move, high enough to avoid the pennies.</span></div>
+    <div class="pillar"><b>5 &middot; Tiny float</b><span>Under 10M shares
+      floating. Scarcity is the fuel of outsized moves.</span></div>
+  </div>
+
+  <h3>Risk rules (frozen for the whole experiment)</h3>
+  <div class="card">
+    <div class="rule"><b>Position size</b><div>Risk exactly <b>1% of current equity</b>
+      per trade, measured entry-to-stop. Never more.</div></div>
+    <div class="rule"><b>Initial stop</b><div>5% below entry, placed <b>immediately</b>
+      with the entry. A position is never naked.</div></div>
+    <div class="rule"><b>Circuit breaker</b><div>If the day's drawdown hits
+      <b>&minus;6%</b> of starting equity, everything is liquidated at market and
+      trading stops for the day. No exceptions, no overrides.</div></div>
+    <div class="rule"><b>Time discipline</b><div>No new entries after 15:45 ET;
+      <b>flat by 15:55 ET</b> every day. Nothing is held overnight.</div></div>
+    <div class="rule"><b>One shot</b><div>One signal per ticker per day. No
+      averaging down, ever.</div></div>
+    <div class="rule"><b>Pessimistic fills</b><div>Simulated entries pay the ask
+      plus a tick; stops fill <i>worse</i> than their trigger (half an ATR of
+      slippage, up to &minus;2%); oversized orders only half-fill. The simulation is
+      rigged <i>against</i> the AI on purpose.</div></div>
+  </div>
+</section>
+
+<section id="method">
+  <h2>The scientific method</h2>
+  <p class="mut" style="max-width:820px">Most trading content shows you winners
+  after the fact. This experiment registered its hypothesis and pass/fail
+  criteria <b>before the first trade</b>, froze the rules, and publishes
+  everything &mdash; including the incident log of its own malfunctions.</p>
+  <div class="card">
+    <h3 style="margin-top:0">Pre-registered validation: 30 trading days, 3 gates</h3>
+    <ul>
+      <li><b>Gate 1 &mdash; Mechanical:</b> zero critical failures (naked stops,
+        duplicate orders, crash-recovery faults) over the whole window.</li>
+      <li><b>Gate 2 &mdash; Risk fidelity:</b> not a single trade may breach the 1%
+        sizing rule, the stop rule, or the &minus;6% breaker &mdash; verified by SQL
+        checks on the public trade log, not by trust.</li>
+      <li><b>Gate 3 &mdash; Economics:</b> expectancy &ge; +0.05R per trade, max
+        drawdown &le; 8%, profit factor &ge; 1.1 across &ge;25 trades.</li>
+    </ul>
+    <h3>Anti-cheating commitments</h3>
+    <ul>
+      <li><b>Frozen rules:</b> any change to sizing, stops, or the breaker resets
+        the 30-day clock to zero.</li>
+      <li><b>Frozen learning:</b> the system's self-tuning feedback loop is
+        suspended for the window, so it cannot quietly overfit mid-test.</li>
+      <li><b>Failures are data:</b> software incidents are logged, classified, and
+        published above. A hidden failure would be a failed experiment.</li>
+      <li><b>Falsifiable:</b> if any gate fails, the published result is NO-GO.
+        That outcome is as scientifically useful as a pass.</li>
+    </ul>
+    <h3>Honest limitations</h3>
+    <ul class="mut">
+      <li>Market data is ~15 minutes delayed (free feed); bid/ask spreads are
+        synthesized. Real-time execution would differ &mdash; possibly materially.</li>
+      <li>Simulated orders can't move the market; real orders in micro-caps do.</li>
+      <li>One 30-day window is a small sample. A pass is evidence, not proof.</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+<footer><div class="wrap">
+<p><strong>The Open AI Trading Experiment</strong> &mdash; a public research
+log of an autonomous AI trading system operating a <strong>simulated</strong>
+paper account. Every trade, win or lose, is published unedited.</p>
+<p>All results on this site are HYPOTHETICAL AND SIMULATED. No real money is
+traded. Nothing here is investment advice, an offer, or a solicitation; see the
+full <a href="disclaimer.html">Disclaimer &amp; Terms of Use</a> and
+<a href="privacy.html">Privacy Policy</a>. Trading involves substantial risk of
+loss and is not suitable for everyone.</p>
+<p>This site may display third-party advertising. Advertisers have no influence
+over, and no access to, the system or its results, and an ad's appearance is
+not an endorsement.</p>
+<p>&copy; 2026 The Open AI Trading Experiment &middot; Data updates after each
+U.S. market session &middot; Contact: via
+<a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
+</div></footer>
+<script>
+const D = {"generated": "2026-06-11 21:08", "window": {"start": "2026-06-12", "days_done": 0, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [], "daily_pnl": [], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [], "feed_date": null};
+const $ = id => document.getElementById(id);
+const fmt$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2}));
+$('generated').textContent = D.generated;
+
+const W = D.window;
+$('pbDays').style.width   = Math.min(100, 100*W.days_done/W.days_target)+'%';
+$('pbTrades').style.width = Math.min(100, 100*W.trades_done/W.trades_target)+'%';
+$('pbDaysTxt').textContent   = `${W.days_done} / ${W.days_target} days (window opened ${W.start})`;
+$('pbTradesTxt').textContent = `${W.trades_done} / ${W.trades_target} closed trades`;
+
+const K = D.kpis, IC = D.incident_counts;
+const ret = (K.equity-K.start_equity)/K.start_equity*100;
+$('kpis').innerHTML = [
+ ['Simulated equity', fmt$(K.equity), `started at ${fmt$(K.start_equity)}`],
+ ['Total return', (ret>=0?'+':'')+ret.toFixed(2)+'%', 'simulated, net of modeled slippage'],
+ ['Realized P&L', fmt$(K.realized_pnl), 'closed trades only'],
+ ['Win rate', K.win_rate==null?'—':K.win_rate+'%', 'target: honesty, not 100%'],
+ ['Expectancy', K.expectancy_r==null?'—':K.expectancy_r+'R', 'gate: ≥ +0.05R'],
+ ['Profit factor', K.profit_factor==null?'—':K.profit_factor, 'gate: ≥ 1.1'],
+ ['Open positions', K.open_count, 'always 0 overnight'],
+ ['Incidents A/B/C', `${IC.A||0} / ${IC.B||0} / ${IC.C||0}`, 'gate: zero class A'],
+].map(([l,v,s])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+
+const axes={ticks:{color:'#8b93a7',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}};
+if (D.equity_curve.length){
+ new Chart($('eq'),{type:'line',data:{labels:D.equity_curve.map(p=>p.d),
+  datasets:[{data:D.equity_curve.map(p=>p.v),borderColor:'#6ee7ff',
+  backgroundColor:'rgba(110,231,255,.08)',fill:true,tension:.3,pointRadius:2}]},
+  options:{plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('eq').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">First session: ${W.start}. The curve starts when the data does.</div>`);
+if (D.daily_pnl.length){
+ new Chart($('pnl'),{type:'bar',data:{labels:D.daily_pnl.map(p=>p.d),
+  datasets:[{data:D.daily_pnl.map(p=>p.v),
+  backgroundColor:D.daily_pnl.map(p=>p.v>=0?'rgba(52,211,153,.7)':'rgba(248,113,113,.7)')}]},
+  options:{plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('pnl').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">No sessions yet — green and red bars land here daily.</div>`);
+
+const table=(rows,cols)=>`<table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr>`+
+ rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')+'</table>';
+
+$('openT').innerHTML = D.open_trades.length ? table(D.open_trades,[
+ ['Symbol',t=>`<b>${t.symbol}</b>`],['Entry',t=>fmt$(t.entry_price)],
+ ['Shares',t=>t.shares],['Stop',t=>fmt$(t.stop_price)],
+ ['Risk',t=>fmt$(t.initial_risk)]])
+ : '<div class="empty">Flat — no open positions. (By rule, always flat outside market hours.)</div>';
+
+$('candT').innerHTML = D.candidates.length ? table(D.candidates,[
+ ['Ticker',c=>`<b>${c.ticker}</b>`],['Price',c=>fmt$(c.price)],
+ ['Day %',c=>(c.pct>=0?'+':'')+(c.pct??0).toFixed(1)+'%'],
+ ['Pillars',c=>`${c.pillars}/5`],
+ ['Status',c=>c.qualifies?'<span class="chip g">QUEUES</span>':'<span class="chip r">FILTERED</span>']])
+ +`<div class="mut" style="font-size:11.5px;margin-top:8px">Feed date: ${D.feed_date??'—'}.
+ Only 5/5-pillar candidates are eligible; the executor's own gates decide the rest.</div>`
+ : '<div class="empty">No scan published yet today. The morning scan posts before the open.</div>';
+
+const chipFor=r=>({STOP:'r',TIME:'b',BREAKER_FLATTEN:'a',EMERGENCY_EXIT:'a',MANUAL:'a',TARGET:'g'}[r]||'b');
+$('histT').innerHTML = D.closed_trades.length ? table(D.closed_trades,[
+ ['Date',t=>(t.entry_ts||'').slice(0,10)],['Symbol',t=>`<b>${t.symbol}</b>`],
+ ['Entry',t=>fmt$(t.entry_price)],['Exit',t=>fmt$(t.exit_price)],
+ ['Shares',t=>t.shares],
+ ['Exit via',t=>`<span class="chip ${chipFor(t.exit_reason)}">${t.exit_reason||'—'}</span>`],
+ ['P&L',t=>`<span class="${(t.realized_pnl||0)>=0?'grn':'red'}">${fmt$(t.realized_pnl)}</span>`],
+ ['R',t=>t.r_multiple==null?'—':((t.r_multiple>=0?'+':'')+t.r_multiple+'R')]])
+ : '<div class="empty">No closed trades yet. Every one will appear here, winner or loser.</div>';
+
+$('incT').innerHTML = D.incidents.length ? table(D.incidents.slice(0,20),[
+ ['When',i=>(i.ts||'').slice(0,16)],
+ ['Class',i=>`<span class="chip ${i['class']==='A'?'r':i['class']==='B'?'a':'b'}">${i['class']}</span>`],
+ ['Component',i=>i.component],['What happened',i=>i.description]])
+ : '<div class="empty">No incidents logged. (Class A = critical, B = degraded, C = cosmetic.)</div>';
+</script>
+</body></html>

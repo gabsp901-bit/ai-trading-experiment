@@ -1,0 +1,16 @@
+# The Open AI Trading Experiment — public site
+
+Static site published via GitHub Pages: a live, fully transparent log of an
+autonomous AI trading system operating a **simulated** paper account.
+
+- `index.html` — live results, the full (openly disclosed) strategy, and the
+  pre-registered scientific validation method
+- `disclaimer.html` — disclaimer & terms of use (simulated-performance,
+  not-advice, AI disclosure, ads)
+- `privacy.html` — privacy policy (ads/cookies-ready)
+
+**Everything here is simulated. No real money. Not financial advice.**
+
+Pages are regenerated and pushed automatically after each U.S. market session
+by the (private) experiment runtime. Manual edits to the HTML will be
+overwritten on the next publish.
