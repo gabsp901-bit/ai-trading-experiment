@@ -3,6 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vivarium Trades — watch AI trade, every trade public</title>
 <meta name="description" content="Vivarium Trades runs autonomous AI trading creatures on simulated paper accounts and publishes every trade, statistic, and failure. Mayfly day-trades momentum; Heron swing-trades options. Not financial advice.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <link rel="canonical" href="https://mayflytrades.com/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236ee7ff%22 stroke-width=%221.8%22 stroke-linecap=%22round%22><circle cx=%2212%22 cy=%224.6%22 r=%221.3%22/><path d=%22M12 7v8%22/><path d=%22M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z%22/><path d=%22M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z%22/><path d=%22M12 15l-3 5.5M12 15l3 5.5%22/></svg>">
 <meta property="og:site_name" content="Vivarium Trades — open AI trading experiments">
@@ -38,8 +39,9 @@ font-size:13px;padding:8px 16px}
 nav{display:flex;gap:22px;align-items:center;padding:18px 0;flex-wrap:wrap}
 nav .brand{font-weight:800;font-size:17px;color:var(--txt);letter-spacing:.2px}
 nav .brand span{color:var(--acc)}
-nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px;transition:color .15s}
+nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px;padding:6px 0;transition:color .15s}
 nav a.lnk:hover{color:var(--txt);text-decoration:none}
+nav a.lnk.on{color:var(--acc)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .2s}
 .card:hover{border-color:rgba(110,231,255,.22)}
 h1{font-family:var(--display);font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-.5px}
@@ -113,19 +115,10 @@ border-radius:16px;padding:24px;transition:.2s}
 .stats{display:flex;gap:22px;flex-wrap:wrap;margin:16px 0 14px}
 .stat .v{font-size:22px;font-weight:800;font-family:var(--display)}
 .stat .l{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px}
+.spark{width:100%!important;height:38px!important;margin:2px 0 14px}
 </style></head><body>
 <div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
-<div class="wrap"><nav>
-  <a class="brand" href="index.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" style="vertical-align:-4px;margin-right:7px"><circle cx="12" cy="4.6" r="1.3"/><path d="M12 7v8"/><path d="M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z"/><path d="M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z"/><path d="M12 15l-3 5.5M12 15l3 5.5"/></svg>VIVARIUM<span> TRADES</span></a>
-  <a class="lnk" href="index.html">Overview</a>
-  <a class="lnk" href="mayfly.html">Mayfly</a>
-  <a class="lnk" href="heron.html">Heron</a>
-  <a class="lnk" href="journal.html">Journal</a>
-  <a class="lnk" href="about.html">About</a>
-  <a class="lnk" href="faq.html">FAQ</a>
-  <a class="lnk" href="disclaimer.html">Disclaimer</a>
-  <a class="lnk" href="privacy.html">Privacy</a>
-</nav></div>
+<div class="wrap"><nav><a class="brand" href="index.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" style="vertical-align:-4px;margin-right:7px"><circle cx="12" cy="4.6" r="1.3"/><path d="M12 7v8"/><path d="M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z"/><path d="M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z"/><path d="M12 15l-3 5.5M12 15l3 5.5"/></svg>VIVARIUM<span> TRADES</span></a><a class="lnk on" href="index.html" aria-current="page">Overview</a><a class="lnk" href="mayfly.html">Mayfly</a><a class="lnk" href="heron.html">Heron</a><a class="lnk" href="journal.html">Journal</a><a class="lnk" href="about.html">About</a><a class="lnk" href="faq.html">FAQ</a><a class="lnk" href="disclaimer.html">Disclaimer</a><a class="lnk" href="privacy.html">Privacy</a></nav></div>
 <div class="wrap">
 <div class="hero">
   <div class="slabel">Vivarium Trades · live · simulated capital</div>
@@ -141,12 +134,14 @@ border-radius:16px;padding:24px;transition:.2s}
     <h2>&#129418; Mayfly</h2>
     <div class="role">Day-trade momentum &middot; intraday, flat by the close</div>
     <div class="stats" id="mStats"></div>
+    <canvas class="spark" id="mSpark" aria-hidden="true"></canvas>
     <span class="chip b">View experiment &rarr;</span>
   </a>
   <a class="expcard" href="heron.html">
     <h2>&#129526; Heron</h2>
     <div class="role">Swing options &middot; patient, multi-week holds</div>
     <div class="stats" id="hStats"></div>
+    <canvas class="spark" id="hSpark" aria-hidden="true"></canvas>
     <span class="chip b">View experiment &rarr;</span>
   </a>
 </div>
@@ -185,7 +180,7 @@ after each U.S. market session &middot; Contact: via
 <a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
 </div></footer>
 <script>
-const M = {"generated": "2026-06-15 22:55", "window": {"start": "2026-06-12", "days_done": 2, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [{"d": "2026-06-12", "v": 4300.0}, {"d": "2026-06-15", "v": 4300.0}], "daily_pnl": [{"d": "2026-06-12", "v": 0.0}, {"d": "2026-06-15", "v": 0.0}], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [{"ticker": "UBXG", "price": 8.25, "pct": 64.30063, "pillars": 4, "qualifies": false}, {"ticker": "EDHL", "price": 6.93, "pct": 44.48161, "pillars": 4, "qualifies": false}, {"ticker": "DSY", "price": 4.8995, "pct": 25.7732, "pillars": 4, "qualifies": false}, {"ticker": "SNSE", "price": 14.65, "pct": 20.48193, "pillars": 4, "qualifies": false}, {"ticker": "AKAN", "price": 17.68, "pct": 20.46784, "pillars": 4, "qualifies": false}, {"ticker": "FLNT", "price": 2.47, "pct": 18.58407, "pillars": 4, "qualifies": false}, {"ticker": "GMM", "price": 4.01, "pct": 16.66667, "pillars": 4, "qualifies": false}, {"ticker": "SOWG", "price": 2.05, "pct": 15.34091, "pillars": 4, "qualifies": false}, {"ticker": "YI", "price": 4.91, "pct": 14.25234, "pillars": 4, "qualifies": false}, {"ticker": "JCTC", "price": 2.15, "pct": 13.93443, "pillars": 4, "qualifies": false}, {"ticker": "KZIA", "price": 15.0, "pct": 13.8756, "pillars": 4, "qualifies": false}, {"ticker": "SXTC", "price": 2.5087, "pct": 13.71681, "pillars": 4, "qualifies": false}, {"ticker": "CUPR", "price": 4.28, "pct": 64.73029, "pillars": 3, "qualifies": false}, {"ticker": "PTLE", "price": 5.5, "pct": 19.3589, "pillars": 3, "qualifies": false}, {"ticker": "RTB", "price": 4.65, "pct": 17.72152, "pillars": 3, "qualifies": false}, {"ticker": "RKLZ", "price": 2.7103, "pct": 21.37097, "pillars": 2, "qualifies": false}], "feed_date": "2026-06-15"}, H = {"generated": "2026-06-15 22:55", "window": {"start": null, "days_done": 0, "days_target": 60, "trades_done": 0, "trades_target": 20}, "kpis": {"equity": 25000.0, "start_equity": 25000.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0, "pending_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [], "daily_pnl": [], "open_trades": [], "closed_trades": [], "pending": [], "incidents": [], "skips": []};
+const M = {"generated": "2026-06-15 23:11", "window": {"start": "2026-06-12", "days_done": 2, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [{"d": "2026-06-12", "v": 4300.0}, {"d": "2026-06-15", "v": 4300.0}], "daily_pnl": [{"d": "2026-06-12", "v": 0.0}, {"d": "2026-06-15", "v": 0.0}], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [{"ticker": "UBXG", "price": 8.25, "pct": 64.30063, "pillars": 4, "qualifies": false}, {"ticker": "EDHL", "price": 6.93, "pct": 44.48161, "pillars": 4, "qualifies": false}, {"ticker": "DSY", "price": 4.8995, "pct": 25.7732, "pillars": 4, "qualifies": false}, {"ticker": "SNSE", "price": 14.65, "pct": 20.48193, "pillars": 4, "qualifies": false}, {"ticker": "AKAN", "price": 17.68, "pct": 20.46784, "pillars": 4, "qualifies": false}, {"ticker": "FLNT", "price": 2.47, "pct": 18.58407, "pillars": 4, "qualifies": false}, {"ticker": "GMM", "price": 4.01, "pct": 16.66667, "pillars": 4, "qualifies": false}, {"ticker": "SOWG", "price": 2.05, "pct": 15.34091, "pillars": 4, "qualifies": false}, {"ticker": "YI", "price": 4.91, "pct": 14.25234, "pillars": 4, "qualifies": false}, {"ticker": "JCTC", "price": 2.15, "pct": 13.93443, "pillars": 4, "qualifies": false}, {"ticker": "KZIA", "price": 15.0, "pct": 13.8756, "pillars": 4, "qualifies": false}, {"ticker": "SXTC", "price": 2.5087, "pct": 13.71681, "pillars": 4, "qualifies": false}, {"ticker": "CUPR", "price": 4.28, "pct": 64.73029, "pillars": 3, "qualifies": false}, {"ticker": "PTLE", "price": 5.5, "pct": 19.3589, "pillars": 3, "qualifies": false}, {"ticker": "RTB", "price": 4.65, "pct": 17.72152, "pillars": 3, "qualifies": false}, {"ticker": "RKLZ", "price": 2.7103, "pct": 21.37097, "pillars": 2, "qualifies": false}], "feed_date": "2026-06-15"}, H = {"generated": "2026-06-15 23:11", "window": {"start": null, "days_done": 0, "days_target": 60, "trades_done": 0, "trades_target": 20}, "kpis": {"equity": 25000.0, "start_equity": 25000.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0, "pending_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [], "daily_pnl": [], "open_trades": [], "closed_trades": [], "pending": [], "incidents": [], "skips": []};
 const $ = id => document.getElementById(id);
 const f$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:0}));
 const stat = (l,v) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
@@ -197,5 +192,16 @@ function fill(el, d){
     + stat('Win rate', d.kpis.win_rate==null?'—':d.kpis.win_rate+'%');
 }
 fill($('mStats'), M); fill($('hStats'), H);
+function spark(id, curve){
+  const el=$(id);
+  if(!curve || curve.length<2){ el.style.display='none'; return; }
+  new Chart(el,{type:'line',data:{labels:curve.map((_,i)=>i),
+    datasets:[{data:curve.map(p=>p.v),borderColor:'#6ee7ff',borderWidth:1.5,
+      pointRadius:0,tension:.3,fill:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}}});
+}
+spark('mSpark', M.equity_curve); spark('hSpark', H.equity_curve);
 </script>
 </body></html>
