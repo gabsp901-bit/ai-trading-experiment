@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mayfly — watch an AI trade, every trade public</title>
+<meta name="description" content="Mayfly is an autonomous AI trading small-cap momentum on a simulated paper account — every position born after the open, dead by the close, under frozen risk rules. Every trade and failure is published. Simulated money — not financial advice.">
+<link rel="canonical" href="https://mayflytrades.com/mayfly.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236ee7ff%22 stroke-width=%221.8%22 stroke-linecap=%22round%22><circle cx=%2212%22 cy=%224.6%22 r=%221.3%22/><path d=%22M12 7v8%22/><path d=%22M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z%22/><path d=%22M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z%22/><path d=%22M12 15l-3 5.5M12 15l3 5.5%22/></svg>">
+<meta property="og:site_name" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:title" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:description" content="Vivarium Trades runs autonomous AI trading 'creatures' on simulated paper accounts and publishes everything — every trade, statistic, and failure. Mayfly day-trades momentum; Heron swing-trades options. Simulated money, frozen rules, public results. Not financial advice.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mayflytrades.com/og.png?v=2026-06-15">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://mayflytrades.com/mayfly.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mayflytrades.com/og.png?v=2026-06-15">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6713026951410554" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<style>
+:root{--bg:#0a0e16;--card:#111726;--card2:#0e1420;--line:rgba(255,255,255,.07);
+--txt:#e6eaf2;--mut:#8b93a7;--grn:#34d399;--red:#f87171;--amb:#fbbf24;--acc:#6ee7ff;
+--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--display:'Space Grotesk',Inter,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
+color:var(--txt);font:15px/1.6 Inter,system-ui,sans-serif;min-height:100vh;
+font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+a{color:var(--acc);text-decoration:none;transition:color .15s}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.simbanner{position:sticky;top:0;z-index:50;background:rgba(59,47,10,.82);
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+border-bottom:1px solid #6b5618;color:#fde68a;text-align:center;font-weight:600;
+font-size:13px;padding:8px 16px}
+nav{display:flex;gap:22px;align-items:center;padding:18px 0;flex-wrap:wrap}
+nav .brand{font-weight:800;font-size:17px;color:var(--txt);letter-spacing:.2px}
+nav .brand span{color:var(--acc)}
+nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px;transition:color .15s}
+nav a.lnk:hover{color:var(--txt);text-decoration:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .2s}
+.card:hover{border-color:rgba(110,231,255,.22)}
+h1{font-family:var(--display);font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-.5px}
+h2{font-family:var(--display);font-size:22px;font-weight:600;margin:0 0 14px;letter-spacing:-.3px}
+h3{font-size:15px;font-weight:600;margin:18px 0 6px}
+p.mut,li.mut,.mut{color:var(--mut)}
+section{margin:34px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--mut);text-align:left;font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+.chip.g{background:rgba(52,211,153,.12);color:var(--grn)}
+.chip.r{background:rgba(248,113,113,.12);color:var(--red)}
+.chip.a{background:rgba(251,191,36,.12);color:var(--amb)}
+.chip.b{background:rgba(110,231,255,.10);color:var(--acc)}
+.grn{color:var(--grn)}.red{color:var(--red)}.amb{color:var(--amb)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 40px;
+color:var(--mut);font-size:12.5px}
+footer p{margin:0 0 8px}
+.legalbox{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:16px 18px;font-size:12.5px;color:var(--mut);margin:12px 0}
+ul{padding-left:22px}li{margin:5px 0}
+nav a.lnk{position:relative}
+nav a.lnk::after{content:"";position:absolute;left:0;bottom:-4px;height:1px;width:0;
+background:var(--acc);box-shadow:0 0 6px var(--acc);transition:width .2s}
+nav a.lnk:hover::after{width:100%}
+nav .brand:hover{text-shadow:0 0 14px rgba(110,231,255,.45)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+background:linear-gradient(rgba(110,231,255,.022) 1px,transparent 1px) 0 0/100% 58px,
+linear-gradient(90deg,rgba(110,231,255,.022) 1px,transparent 1px) 0 0/58px 100%;
+-webkit-mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%);
+mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:99px;
+font-weight:600;font-size:14px;border:1px solid rgba(110,231,255,.35);background:rgba(110,231,255,.10);
+color:var(--acc);cursor:pointer;transition:.2s;backdrop-filter:blur(6px)}
+.btn:hover{background:rgba(110,231,255,.18);box-shadow:0 0 26px rgba(110,231,255,.22);
+transform:translateY(-1px);text-decoration:none}
+.btn svg{width:16px;height:16px}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--txt)}
+.btn.ghost:hover{border-color:rgba(110,231,255,.4);box-shadow:none}
+.slabel{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--acc);
+text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.slabel::before{content:"";width:24px;height:1px;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.reveal.in{opacity:1;transform:none}
+details.disc{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:0 16px;margin:10px 0;transition:border-color .2s}
+details.disc[open]{border-color:rgba(110,231,255,.25)}
+details.disc summary{cursor:pointer;padding:14px 0;font-weight:600;font-family:var(--display);
+list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.disc summary::-webkit-details-marker{display:none}
+details.disc summary::after{content:"+";color:var(--acc);font-size:20px;line-height:1;transition:transform .2s}
+details.disc[open] summary::after{transform:rotate(45deg)}
+details.disc .body{padding:0 0 14px}
+@media(max-width:760px){h1{font-size:26px}body{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+transition-duration:.001ms!important}}
+
+.hero{position:relative;min-height:calc(100dvh - 120px);display:flex;align-items:center;
+overflow:hidden;margin-bottom:6px}
+.hero #fx{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-in{position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;
+letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;margin-bottom:18px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--grn);
+box-shadow:0 0 10px var(--grn);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.hero h1{font-family:var(--display);font-size:clamp(40px,7vw,84px);line-height:1.02;
+font-weight:700;letter-spacing:-2px;margin:0}
+.hero h1 .g{color:var(--acc);text-shadow:0 0 34px rgba(110,231,255,.4)}
+.hero .lead{max-width:520px;color:var(--mut);font-size:clamp(15px,2.1vw,19px);margin:20px 0 0;line-height:1.55}
+.cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:30px;
+font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--mut)}
+.status span{display:inline-flex;align-items:center;gap:7px}
+.status b{color:var(--txt);font-weight:600}
+.status .sep{width:1px;height:13px;background:var(--line);padding:0}
+.status .sd{width:6px;height:6px;border-radius:50%;background:var(--grn);
+box-shadow:0 0 8px var(--grn);animation:pulse 2s ease-in-out infinite}
+.scroll{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2;
+display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--mut);
+font-family:var(--mono);font-size:10px;letter-spacing:3px}
+.scroll:hover{text-decoration:none;color:var(--acc)}
+.scroll i{width:1px;height:36px;background:linear-gradient(var(--acc),transparent);
+animation:drop 1.8s ease-in-out infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+transition:border-color .2s,transform .2s}
+.kpi:hover{border-color:rgba(110,231,255,.22);transform:translateY(-2px)}
+.kpi .l{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px;font-family:var(--mono);letter-spacing:-.5px}
+.kpi .s{font-size:11.5px;color:var(--mut);margin-top:2px}
+.progress{height:8px;background:var(--card2);border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--grn));border-radius:99px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.empty{color:var(--mut);text-align:center;padding:26px 10px;font-size:13px}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:14px}
+.pcard{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:14px;
+padding:18px;overflow:hidden;transition:transform .25s,border-color .25s}
+.pcard::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity .25s;
+background:radial-gradient(140px 90px at 50% -10%,rgba(110,231,255,.12),transparent)}
+.pcard:hover{transform:translateY(-5px);border-color:rgba(110,231,255,.35)}
+.pcard:hover::after{opacity:1}
+.pcard .ic{color:var(--acc);position:relative;z-index:1}
+.pcard .ic svg{width:24px;height:24px}
+.pcard .n{font-family:var(--mono);font-size:10.5px;color:var(--mut);margin-top:12px;letter-spacing:1px}
+.pcard b{display:block;font-family:var(--display);font-size:16px;margin:3px 0 0;position:relative;z-index:1}
+.pcard .d{color:var(--mut);font-size:12.5px;line-height:1.45;max-height:0;opacity:0;overflow:hidden;
+transition:max-height .3s,opacity .3s,margin .3s;margin-top:0}
+.pcard:hover .d{max-height:90px;opacity:1;margin-top:8px}
+@media(hover:none){.pcard .d{max-height:90px;opacity:1;margin-top:8px}}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.rl{background:var(--card2);border:1px solid var(--line);border-left:2px solid var(--acc);
+border-radius:10px;padding:12px 14px;transition:transform .2s,box-shadow .2s}
+.rl:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(110,231,255,.12)}
+.rl span{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--mut)}
+.rl b{display:block;font-family:var(--display);font-size:21px;margin-top:5px}
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0}
+.gate{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:18px;
+transition:transform .25s,border-color .25s}
+.gate:hover{transform:translateY(-4px);border-color:rgba(110,231,255,.35)}
+.gate .gi{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--acc)}
+.gate b{display:block;font-family:var(--display);font-size:20px;margin:8px 0 6px}
+.gate p{color:var(--mut);font-size:13px;margin:0}
+@media(max-width:760px){.hero{min-height:auto;padding:54px 0 26px}.hero h1{letter-spacing:-1px}}
+</style></head><body>
+<div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
+<div class="wrap"><nav>
+  <a class="brand" href="index.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" style="vertical-align:-4px;margin-right:7px"><circle cx="12" cy="4.6" r="1.3"/><path d="M12 7v8"/><path d="M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z"/><path d="M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z"/><path d="M12 15l-3 5.5M12 15l3 5.5"/></svg>VIVARIUM<span> TRADES</span></a>
+  <a class="lnk" href="index.html">Overview</a>
+  <a class="lnk" href="mayfly.html">Mayfly</a>
+  <a class="lnk" href="heron.html">Heron</a>
+  <a class="lnk" href="journal.html">Journal</a>
+  <a class="lnk" href="about.html">About</a>
+  <a class="lnk" href="faq.html">FAQ</a>
+  <a class="lnk" href="disclaimer.html">Disclaimer</a>
+  <a class="lnk" href="privacy.html">Privacy</a>
+</nav></div>
+<header class="hero">
+  <canvas id="fx"></canvas>
+  <div class="wrap hero-in">
+    <span class="eyebrow"><i class="dot"></i> Live experiment &middot; simulated capital</span>
+    <h1>Watch a machine<br><span class="g">trade in the open.</span></h1>
+    <p class="lead">An autonomous AI trading small-cap momentum on a simulated
+    account &mdash; every position gone by the bell, every trade published.</p>
+    <div class="cta">
+      <a class="btn" href="#results">See it trading
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn ghost" href="about.html">How it works</a>
+    </div>
+    <div class="status" id="heroStat"></div>
+  </div>
+  <a class="scroll" href="#results" aria-label="Scroll to live results"><span>EXPLORE</span><i></i></a>
+</header>
+
+<div class="wrap">
+
+<section id="results" class="reveal">
+  <h2>Live results <span class="mut" style="font-weight:400;font-size:13px">
+  &mdash; updated after each session &middot; last build <span id="generated"></span> ET</span></h2>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="grid2">
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; trading days</div>
+        <div class="progress"><i id="pbDays"></i></div>
+        <div style="font-size:12.5px" id="pbDaysTxt"></div>
+      </div>
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; completed trades</div>
+        <div class="progress"><i id="pbTrades"></i></div>
+        <div style="font-size:12.5px" id="pbTradesTxt"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="card"><h2>Equity curve <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="eq" height="220"></canvas></div>
+    <div class="card"><h2>Daily P&amp;L <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="pnl" height="220"></canvas></div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><h2>Open positions</h2><div id="openT"></div></div>
+    <div class="card"><h2>Today's candidate queue</h2><div id="candT"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px"><h2>Trade history
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; every closed trade, unedited</span></h2>
+    <div id="histT" style="overflow-x:auto"></div></div>
+
+  <div class="card" style="margin-top:14px"><h2>Incident log
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; we publish our failures too</span></h2>
+    <div id="incT"></div></div>
+
+  <div class="legalbox">All figures above are <b>hypothetical, simulated
+  results</b> produced by a computer model with deliberately pessimistic fill
+  assumptions and delayed market data. They are not real trades, involve no
+  real money, and do not represent returns any person obtained or could have
+  obtained. See the full <a href="disclaimer.html">Disclaimer</a>.</div>
+</section>
+
+<section id="strategy" class="reveal">
+  <div class="slabel">The strategy &middot; fully open</div>
+  <h2>Five pillars. Every one required.</h2>
+  <p class="mut" style="max-width:600px;margin:-4px 0 18px">Small-cap "gap &amp; go"
+  momentum &mdash; the market's most dangerous regime, chosen because it punishes
+  sloppy risk instantly. Published in full. Copy at your own risk.</p>
+  <div class="pillars">
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></div>
+      <div class="n">01 / GAP</div><b>Up &ge;10% today</b>
+      <div class="d">Momentum already proven, not predicted. Preference &ge;30%.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20v-6M11 20V8M16 20v-9"/></svg></div>
+      <div class="n">02 / VOLUME</div><b>&ge;5&times; average</b>
+      <div class="d">Real crowds, not ghosts. Liquidity has to already be there.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+      <div class="n">03 / CATALYST</div><b>Real news</b>
+      <div class="d">An identifiable catalyst &mdash; earnings, FDA, contracts &mdash; vetted by an LLM.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="n">04 / PRICE</div><b>$2&ndash;$20</b>
+      <div class="d">Room to move; high enough to clear the pennies.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div class="n">05 / FLOAT</div><b>Under 10M shares</b>
+      <div class="d">Scarcity is the fuel of outsized moves.</div></div>
+  </div>
+
+  <div class="slabel" style="margin-top:34px">Risk rules &middot; frozen in code</div>
+  <h2>Limits the AI cannot touch.</h2>
+  <div class="rules">
+    <div class="rl"><span>RISK / TRADE</span><b>1%</b></div>
+    <div class="rl"><span>INITIAL STOP</span><b>&minus;5%</b></div>
+    <div class="rl"><span>DAILY BREAKER</span><b>&minus;6%</b></div>
+    <div class="rl"><span>FLAT BY</span><b>15:55</b></div>
+    <div class="rl"><span>SHOTS / TICKER</span><b>1</b></div>
+    <div class="rl"><span>FILLS</span><b>HOSTILE</b></div>
+  </div>
+</section>
+
+<section id="method" class="reveal">
+  <div class="slabel">The scientific method</div>
+  <h2>Pre-registered. Falsifiable.</h2>
+  <p class="mut" style="max-width:600px;margin:-4px 0 18px">The hypothesis and
+  pass/fail gates were fixed <b>before the first trade</b>. 30 trading days.
+  Three gates. Public failures.</p>
+  <div class="gates">
+    <div class="gate"><span class="gi">GATE 01</span><b>Mechanical</b>
+      <p>Zero critical failures &mdash; no naked stops, no duplicate orders.</p></div>
+    <div class="gate"><span class="gi">GATE 02</span><b>Risk fidelity</b>
+      <p>Not one trade breaches the 1% / stop / &minus;6% rules. Verified by SQL, not trust.</p></div>
+    <div class="gate"><span class="gi">GATE 03</span><b>Economics</b>
+      <p>Expectancy &ge; +0.05R &middot; profit factor &ge; 1.1 &middot; drawdown &le; 8%.</p></div>
+  </div>
+  <details class="disc"><summary>Anti-cheating commitments</summary><div class="body">
+    <ul>
+      <li><b>Frozen rules:</b> any change to sizing, stops, or the breaker resets the 30-day clock to zero.</li>
+      <li><b>Frozen learning:</b> the self-tuning feedback loop is suspended for the window, so it cannot overfit mid-test.</li>
+      <li><b>Failures are data:</b> software incidents are logged, classified, and published. A hidden failure is a failed experiment.</li>
+      <li><b>Falsifiable:</b> if any gate fails, the result is NO-GO &mdash; as useful as a pass.</li>
+    </ul></div></details>
+  <details class="disc"><summary>Honest limitations</summary><div class="body">
+    <ul class="mut">
+      <li>Market data is ~15 minutes delayed; bid/ask spreads are synthesized. Real-time execution would differ.</li>
+      <li>Simulated orders can't move the market; real orders in micro-caps do.</li>
+      <li>One 30-day window is a small sample. A pass is evidence, not proof.</li>
+    </ul></div></details>
+</section>
+
+</div>
+<footer><div class="wrap">
+<p><strong>VIVARIUM TRADES</strong> &mdash; a public research log of autonomous
+AI trading 'creatures' operating <strong>simulated</strong> paper accounts.
+<b>Mayfly</b> day-trades momentum; <b>Heron</b> swing-trades options. Every
+trade, win or lose, is published unedited.</p>
+<p>All results on this site are HYPOTHETICAL AND SIMULATED. No real money is
+traded. Nothing here is investment advice, an offer, or a solicitation; see the
+full <a href="disclaimer.html">Disclaimer &amp; Terms of Use</a> and
+<a href="privacy.html">Privacy Policy</a>. Trading &mdash; especially options
+&mdash; involves substantial risk of loss and is not suitable for everyone.</p>
+<p>This site may display third-party advertising. Advertisers have no influence
+over, and no access to, the systems or their results, and an ad's appearance is
+not an endorsement.</p>
+<p>&copy; 2026 Vivarium Trades &middot; vivariumtrades.com &middot; Data updates
+after each U.S. market session &middot; Contact: via
+<a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
+</div></footer>
+<script>
+const D = {"generated": "2026-06-15 22:55", "window": {"start": "2026-06-12", "days_done": 2, "days_target": 30, "trades_done": 0, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4300.0, "start_equity": 4300.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [{"d": "2026-06-12", "v": 4300.0}, {"d": "2026-06-15", "v": 4300.0}], "daily_pnl": [{"d": "2026-06-12", "v": 0.0}, {"d": "2026-06-15", "v": 0.0}], "open_trades": [], "closed_trades": [], "incidents": [], "skips": [], "candidates": [{"ticker": "UBXG", "price": 8.25, "pct": 64.30063, "pillars": 4, "qualifies": false}, {"ticker": "EDHL", "price": 6.93, "pct": 44.48161, "pillars": 4, "qualifies": false}, {"ticker": "DSY", "price": 4.8995, "pct": 25.7732, "pillars": 4, "qualifies": false}, {"ticker": "SNSE", "price": 14.65, "pct": 20.48193, "pillars": 4, "qualifies": false}, {"ticker": "AKAN", "price": 17.68, "pct": 20.46784, "pillars": 4, "qualifies": false}, {"ticker": "FLNT", "price": 2.47, "pct": 18.58407, "pillars": 4, "qualifies": false}, {"ticker": "GMM", "price": 4.01, "pct": 16.66667, "pillars": 4, "qualifies": false}, {"ticker": "SOWG", "price": 2.05, "pct": 15.34091, "pillars": 4, "qualifies": false}, {"ticker": "YI", "price": 4.91, "pct": 14.25234, "pillars": 4, "qualifies": false}, {"ticker": "JCTC", "price": 2.15, "pct": 13.93443, "pillars": 4, "qualifies": false}, {"ticker": "KZIA", "price": 15.0, "pct": 13.8756, "pillars": 4, "qualifies": false}, {"ticker": "SXTC", "price": 2.5087, "pct": 13.71681, "pillars": 4, "qualifies": false}, {"ticker": "CUPR", "price": 4.28, "pct": 64.73029, "pillars": 3, "qualifies": false}, {"ticker": "PTLE", "price": 5.5, "pct": 19.3589, "pillars": 3, "qualifies": false}, {"ticker": "RTB", "price": 4.65, "pct": 17.72152, "pillars": 3, "qualifies": false}, {"ticker": "RKLZ", "price": 2.7103, "pct": 21.37097, "pillars": 2, "qualifies": false}], "feed_date": "2026-06-15"};
+const $ = id => document.getElementById(id);
+const fmt$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2}));
+$('generated').textContent = D.generated;
+
+const W = D.window;
+$('pbDays').style.width   = Math.min(100, 100*W.days_done/W.days_target)+'%';
+$('pbTrades').style.width = Math.min(100, 100*W.trades_done/W.trades_target)+'%';
+$('pbDaysTxt').textContent   = `${W.days_done} / ${W.days_target} days (window opened ${W.start})`;
+$('pbTradesTxt').textContent = `${W.trades_done} / ${W.trades_target} closed trades`;
+
+const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
+function countUp(el,target,fmt,dur){
+  if(RM||target==null){el.textContent=(target==null?'—':fmt(target));return;}
+  const t0=performance.now();dur=dur||1100;
+  const step=now=>{let p=Math.min(1,(now-t0)/dur);p=1-Math.pow(1-p,3);
+    el.textContent=fmt(target*p);if(p<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}
+const K = D.kpis, IC = D.incident_counts;
+const ret = (K.equity-K.start_equity)/K.start_equity*100;
+const kpiDefs=[
+ {l:'Simulated equity', t:K.equity, f:v=>fmt$(v), s:`started at ${fmt$(K.start_equity)}`},
+ {l:'Total return', t:ret, f:v=>(v>=0?'+':'')+v.toFixed(2)+'%', s:'net of modeled slippage'},
+ {l:'Realized P&L', t:K.realized_pnl, f:v=>fmt$(v), s:'closed trades only'},
+ {l:'Win rate', t:K.win_rate, f:v=>v.toFixed(0)+'%', s:'honesty, not 100%'},
+ {l:'Expectancy', t:K.expectancy_r, f:v=>(v>=0?'+':'')+v.toFixed(2)+'R', s:'gate ≥ +0.05R'},
+ {l:'Profit factor', t:K.profit_factor, f:v=>v.toFixed(2), s:'gate ≥ 1.1'},
+ {l:'Open positions', t:K.open_count, f:v=>Math.round(v), s:'always 0 overnight'},
+ {l:'Incidents A/B/C', t:null, text:`${IC.A||0} / ${IC.B||0} / ${IC.C||0}`, s:'gate: zero class A'},
+];
+$('kpis').innerHTML = kpiDefs.map((k,i)=>`<div class="kpi"><div class="l">${k.l}</div><div class="v" id="kv${i}">—</div><div class="s">${k.s}</div></div>`).join('');
+kpiDefs.forEach((k,i)=>{const el=$('kv'+i);if(k.text!=null)el.textContent=k.text;else countUp(el,k.t,k.f);});
+
+// hero live status strip
+$('heroStat').innerHTML =
+ `<span><i class="sd"></i>AUTONOMOUS &middot; SIMULATED</span><span class="sep"></span>`
+ +`<span>EQUITY <b>${fmt$(K.equity)}</b></span><span class="sep"></span>`
+ +`<span>RETURN <b class="${ret>=0?'grn':'red'}">${(ret>=0?'+':'')+ret.toFixed(1)}%</b></span>`;
+const axes={ticks:{color:'#8b93a7',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}};
+if (D.equity_curve.length){
+ new Chart($('eq'),{type:'line',data:{labels:D.equity_curve.map(p=>p.d),
+  datasets:[{data:D.equity_curve.map(p=>p.v),borderColor:'#6ee7ff',
+  backgroundColor:'rgba(110,231,255,.08)',fill:true,tension:.3,pointRadius:2}]},
+  options:{animation:!RM,plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('eq').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">First session: ${W.start}. The curve starts when the data does.</div>`);
+if (D.daily_pnl.length){
+ new Chart($('pnl'),{type:'bar',data:{labels:D.daily_pnl.map(p=>p.d),
+  datasets:[{data:D.daily_pnl.map(p=>p.v),
+  backgroundColor:D.daily_pnl.map(p=>p.v>=0?'rgba(52,211,153,.7)':'rgba(248,113,113,.7)')}]},
+  options:{animation:!RM,plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('pnl').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">No sessions yet — green and red bars land here daily.</div>`);
+
+const table=(rows,cols)=>`<table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr>`+
+ rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')+'</table>';
+
+$('openT').innerHTML = D.open_trades.length ? table(D.open_trades,[
+ ['Symbol',t=>`<b>${t.symbol}</b>`],['Entry',t=>fmt$(t.entry_price)],
+ ['Shares',t=>t.shares],['Stop',t=>fmt$(t.stop_price)],
+ ['Risk',t=>fmt$(t.initial_risk)]])
+ : '<div class="empty">Flat — no open positions. (By rule, always flat outside market hours.)</div>';
+
+$('candT').innerHTML = D.candidates.length ? table(D.candidates,[
+ ['Ticker',c=>`<b>${c.ticker}</b>`],['Price',c=>fmt$(c.price)],
+ ['Day %',c=>(c.pct>=0?'+':'')+(c.pct??0).toFixed(1)+'%'],
+ ['Pillars',c=>`${c.pillars}/5`],
+ ['Status',c=>c.qualifies?'<span class="chip g">QUEUES</span>':'<span class="chip r">FILTERED</span>']])
+ +`<div class="mut" style="font-size:11.5px;margin-top:8px">Feed date: ${D.feed_date??'—'}.
+ Only 5/5-pillar candidates are eligible; the executor's own gates decide the rest.</div>`
+ : '<div class="empty">No scan published yet today. The morning scan posts before the open.</div>';
+
+const chipFor=r=>({STOP:'r',TIME:'b',BREAKER_FLATTEN:'a',EMERGENCY_EXIT:'a',MANUAL:'a',TARGET:'g'}[r]||'b');
+$('histT').innerHTML = D.closed_trades.length ? table(D.closed_trades,[
+ ['Date',t=>(t.entry_ts||'').slice(0,10)],['Symbol',t=>`<b>${t.symbol}</b>`],
+ ['Entry',t=>fmt$(t.entry_price)],['Exit',t=>fmt$(t.exit_price)],
+ ['Shares',t=>t.shares],
+ ['Exit via',t=>`<span class="chip ${chipFor(t.exit_reason)}">${t.exit_reason||'—'}</span>`],
+ ['P&L',t=>`<span class="${(t.realized_pnl||0)>=0?'grn':'red'}">${fmt$(t.realized_pnl)}</span>`],
+ ['R',t=>t.r_multiple==null?'—':((t.r_multiple>=0?'+':'')+t.r_multiple+'R')]])
+ : '<div class="empty">No closed trades yet. Every one will appear here, winner or loser.</div>';
+
+$('incT').innerHTML = D.incidents.length ? table(D.incidents.slice(0,20),[
+ ['When',i=>(i.ts||'').slice(0,16)],
+ ['Class',i=>`<span class="chip ${i['class']==='A'?'r':i['class']==='B'?'a':'b'}">${i['class']}</span>`],
+ ['Component',i=>i.component],['What happened',i=>i.description]])
+ : '<div class="empty">No incidents logged. (Class A = critical, B = degraded, C = cosmetic.)</div>';
+
+/* ---- scroll reveal ---- */
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  if(RM||!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('in'));return;}
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+  }),{threshold:.12});
+  els.forEach(e=>io.observe(e));
+})();
+
+/* ---- particle mayfly (Three.js) ---- */
+(function(){
+  const cv=document.getElementById('fx');
+  if(!cv||!window.THREE) return;
+  const TH=window.THREE;
+  const renderer=new TH.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene=new TH.Scene();
+  const cam=new TH.PerspectiveCamera(60,1,0.1,100);
+  cam.position.z=3.6;
+
+  // --- build the mayfly point cloud ---
+  const pts=[], col=[];
+  const C1=new TH.Color(0x6ee7ff), C2=new TH.Color(0x34d399), C3=new TH.Color(0xeafcff);
+  const push=(x,y,z)=>{pts.push(x,y,z);
+    const m=Math.random(), c=m<0.7?C1:(m<0.88?C2:C3);
+    col.push(c.r,c.g,c.b);};
+  const ell=(cx,cy,rx,ry,rot,n)=>{const cs=Math.cos(rot),sn=Math.sin(rot);
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random());
+      let x=rx*r*Math.cos(a),y=ry*r*Math.sin(a);
+      push(cx+x*cs-y*sn, cy+x*sn+y*cs, (Math.random()-0.5)*0.32);}};
+  const cap=(x1,y1,x2,y2,th,n)=>{for(let i=0;i<n;i++){const t=Math.random();
+    const px=x1+(x2-x1)*t, py=y1+(y2-y1)*t;
+    push(px+(Math.random()-0.5)*th, py+(Math.random()-0.5)*th,(Math.random()-0.5)*0.18);}};
+  ell(0,1.05,0.13,0.13,0,70);                 // head
+  cap(0,1.0,0,-1.0,0.05,140);                 // body
+  ell(0.62,0.42,0.62,0.30, 0.42,300); ell(-0.62,0.42,0.62,0.30,-0.42,300); // upper wings
+  ell(0.44,-0.30,0.42,0.20,-0.30,160); ell(-0.44,-0.30,0.42,0.20,0.30,160); // lower wings
+  cap(0,-1.0,0.30,-2.2,0.012,100); cap(0,-1.0,-0.30,-2.2,0.012,100);        // tail filaments
+
+  const geo=new TH.BufferGeometry();
+  geo.setAttribute('position',new TH.Float32BufferAttribute(pts,3));
+  geo.setAttribute('color',new TH.Float32BufferAttribute(col,3));
+  const mat=new TH.PointsMaterial({size:0.05,vertexColors:true,transparent:true,
+    opacity:0.92,blending:TH.AdditiveBlending,depthWrite:false,sizeAttenuation:true});
+  const fly=new TH.Points(geo,mat);
+  const group=new TH.Group(); group.add(fly); group.position.y=0.25; scene.add(group);
+
+  let mx=0,my=0,tx=0,ty=0;
+  addEventListener('pointermove',e=>{
+    mx=(e.clientX/innerWidth-0.5); my=(e.clientY/innerHeight-0.5);},{passive:true});
+
+  function resize(){const w=cv.clientWidth,h=cv.clientHeight;
+    renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();
+    const halfH=Math.tan((cam.fov*Math.PI/180)/2)*cam.position.z, halfW=halfH*cam.aspect;
+    const wide=w>h;
+    // desktop: park the mayfly in the right half, clear of the headline.
+    // narrow: center it, lift it above the copy, and soften it.
+    group.position.x = wide ? halfW*0.55 : 0;
+    group.position.y = wide ? 0.25 : 1.15;
+    mat.opacity = wide ? 0.92 : 0.5;}
+  resize(); addEventListener('resize',resize);
+
+  if(RM){ renderer.render(scene,cam); return; }   // static frame, no loop
+  let t=0;
+  (function loop(){requestAnimationFrame(loop);
+    t+=0.01;
+    tx+=(my*0.5-tx)*0.05; ty+=(mx*0.7-ty)*0.05;
+    group.rotation.x = tx + Math.sin(t)*0.04;
+    group.rotation.y = ty + Math.sin(t*0.6)*0.18;
+    const s=1+Math.sin(t*1.4)*0.015; group.scale.set(s,s,s);
+    renderer.render(scene,cam);
+  })();
+})();
+</script>
+</body></html>
