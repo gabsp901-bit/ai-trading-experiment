@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vivarium Trades — watch AI trade, every trade public</title>
+<meta name="description" content="Vivarium Trades runs autonomous AI trading creatures on simulated paper accounts and publishes every trade, statistic, and failure. Mayfly day-trades momentum; Heron swing-trades options. Not financial advice.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<link rel="canonical" href="https://mayflytrades.com/overview.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236ee7ff%22 stroke-width=%221.8%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 4 L18.9 8 L18.9 16 L12 20 L5.1 16 L5.1 8 Z%22/><circle cx=%2212%22 cy=%2212%22 r=%221.8%22 fill=%22%236ee7ff%22 stroke=%22none%22/></svg>">
+<meta property="og:site_name" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:title" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:description" content="Vivarium Trades runs autonomous AI trading 'creatures' on simulated paper accounts and publishes everything — every trade, statistic, and failure. Mayfly day-trades momentum; Heron swing-trades options. Simulated money, frozen rules, public results. Not financial advice.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mayflytrades.com/og.png?v=2026-06-22">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://mayflytrades.com/overview.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mayflytrades.com/og.png?v=2026-06-22">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6713026951410554" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e16;--card:#111726;--card2:#0e1420;--line:rgba(255,255,255,.07);
+--txt:#e6eaf2;--mut:#8b93a7;--grn:#34d399;--red:#f87171;--amb:#fbbf24;--acc:#6ee7ff;
+--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--display:'Space Grotesk',Inter,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
+color:var(--txt);font:15px/1.6 Inter,system-ui,sans-serif;min-height:100vh;
+font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+a{color:var(--acc);text-decoration:none;transition:color .15s}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.simbanner{position:sticky;top:0;z-index:50;background:rgba(59,47,10,.82);
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+border-bottom:1px solid #6b5618;color:#fde68a;text-align:center;font-weight:600;
+font-size:13px;padding:8px 16px}
+nav{display:flex;gap:22px;align-items:center;padding:18px 0;flex-wrap:wrap}
+nav .brand{font-weight:800;font-size:17px;color:var(--txt);letter-spacing:.2px}
+nav .brand span{color:var(--acc)}
+nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px;padding:6px 0;transition:color .15s}
+nav a.lnk:hover{color:var(--txt);text-decoration:none}
+nav a.lnk.on{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .2s}
+.card:hover{border-color:rgba(110,231,255,.22)}
+h1{font-family:var(--display);font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-.5px}
+h2{font-family:var(--display);font-size:22px;font-weight:600;margin:0 0 14px;letter-spacing:-.3px}
+h3{font-size:15px;font-weight:600;margin:18px 0 6px}
+p.mut,li.mut,.mut{color:var(--mut)}
+section{margin:34px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--mut);text-align:left;font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+.chip.g{background:rgba(52,211,153,.12);color:var(--grn)}
+.chip.r{background:rgba(248,113,113,.12);color:var(--red)}
+.chip.a{background:rgba(251,191,36,.12);color:var(--amb)}
+.chip.b{background:rgba(110,231,255,.10);color:var(--acc)}
+.grn{color:var(--grn)}.red{color:var(--red)}.amb{color:var(--amb)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 40px;
+color:var(--mut);font-size:12.5px}
+footer p{margin:0 0 8px}
+.legalbox{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:16px 18px;font-size:12.5px;color:var(--mut);margin:12px 0}
+ul{padding-left:22px}li{margin:5px 0}
+nav a.lnk{position:relative}
+nav a.lnk::after{content:"";position:absolute;left:0;bottom:-4px;height:1px;width:0;
+background:var(--acc);box-shadow:0 0 6px var(--acc);transition:width .2s}
+nav a.lnk:hover::after{width:100%}
+nav .brand:hover{text-shadow:0 0 14px rgba(110,231,255,.45)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+background:linear-gradient(rgba(110,231,255,.022) 1px,transparent 1px) 0 0/100% 58px,
+linear-gradient(90deg,rgba(110,231,255,.022) 1px,transparent 1px) 0 0/58px 100%;
+-webkit-mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%);
+mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:99px;
+font-weight:600;font-size:14px;border:1px solid rgba(110,231,255,.35);background:rgba(110,231,255,.10);
+color:var(--acc);cursor:pointer;transition:.2s;backdrop-filter:blur(6px)}
+.btn:hover{background:rgba(110,231,255,.18);box-shadow:0 0 26px rgba(110,231,255,.22);
+transform:translateY(-1px);text-decoration:none}
+.btn svg{width:16px;height:16px}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--txt)}
+.btn.ghost:hover{border-color:rgba(110,231,255,.4);box-shadow:none}
+.slabel{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--acc);
+text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.slabel::before{content:"";width:24px;height:1px;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.reveal.in{opacity:1;transform:none}
+details.disc{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:0 16px;margin:10px 0;transition:border-color .2s}
+details.disc[open]{border-color:rgba(110,231,255,.25)}
+details.disc summary{cursor:pointer;padding:14px 0;font-weight:600;font-family:var(--display);
+list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.disc summary::-webkit-details-marker{display:none}
+details.disc summary::after{content:"+";color:var(--acc);font-size:20px;line-height:1;transition:transform .2s}
+details.disc[open] summary::after{transform:rotate(45deg)}
+details.disc .body{padding:0 0 14px}
+@media(max-width:760px){h1{font-size:26px}body{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+transition-duration:.001ms!important}}
+
+.hero{padding:56px 0 6px}
+.hero h1{font-size:42px;max-width:16ch}
+.hero .lead{color:var(--mut);max-width:60ch;margin-top:16px;font-size:16.5px}
+.exp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:30px 0}
+@media(max-width:820px){.exp{grid-template-columns:1fr}}
+.expcard{display:block;background:var(--card);border:1px solid var(--line);
+border-radius:16px;padding:24px;transition:.2s}
+.expcard:hover{border-color:rgba(110,231,255,.35);transform:translateY(-2px);text-decoration:none}
+.expcard h2{margin:0 0 2px;font-size:24px}
+.expcard .role{color:var(--mut);font-size:13px;margin-bottom:6px}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin:16px 0 14px}
+.stat .v{font-size:22px;font-weight:800;font-family:var(--display)}
+.stat .l{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px}
+.spark{width:100%!important;height:38px!important;margin:2px 0 14px}
+</style></head><body>
+<div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
+<div class="wrap"><nav><a class="brand" href="index.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:7px"><path d="M12 4 L18.9 8 L18.9 16 L12 20 L5.1 16 L5.1 8 Z"/><circle cx="12" cy="12" r="1.4" fill="#6ee7ff" stroke="none"/><path d="M12 7.5V9.2M12 14.8V16.5M7.6 10 9 10.8M15 13.2 16.4 14M16.4 10 15 10.8M9 13.2 7.6 14"/></svg>VIVARIUM<span> TRADES</span></a><a class="lnk" href="index.html">APEX</a><a class="lnk on" href="overview.html" aria-current="page">Overview</a><a class="lnk" href="mayfly.html">Mayfly</a><a class="lnk" href="heron.html">Heron</a><a class="lnk" href="journal.html">Journal</a><a class="lnk" href="about.html">About</a><a class="lnk" href="faq.html">FAQ</a><a class="lnk" href="disclaimer.html">Disclaimer</a><a class="lnk" href="privacy.html">Privacy</a></nav></div>
+<div class="wrap">
+<div class="hero">
+  <div class="slabel">Vivarium Trades · live · simulated capital</div>
+  <h1>Watch an AI trade.<br>Every trade public.</h1>
+  <p class="lead">A glass enclosure for autonomous trading <i>creatures</i>. Each
+  runs a fixed strategy on a <b>simulated</b> paper account under frozen risk
+  rules &mdash; and every trade, statistic, and failure is published unedited.
+  Two are live today:</p>
+</div>
+
+<div class="exp">
+  <a class="expcard" href="mayfly.html">
+    <h2><svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" style="vertical-align:-7px;margin-right:9px"><circle cx="12" cy="4.6" r="1.3"/><path d="M12 7v8"/><path d="M11.2 9.5C8.5 6.8 5 7.2 3.8 10.6c2.3 1.2 5.3.8 7.4-1.1z"/><path d="M12.8 9.5c2.7-2.7 6.2-2.3 7.4 1.1-2.3 1.2-5.3.8-7.4-1.1z"/><path d="M12 15l-3 5.5M12 15l3 5.5"/></svg>Mayfly</h2>
+    <div class="role">Day-trade momentum &middot; intraday, flat by the close</div>
+    <div class="stats" id="mStats"></div>
+    <canvas class="spark" id="mSpark" aria-hidden="true"></canvas>
+    <span class="chip b">View experiment &rarr;</span>
+  </a>
+  <a class="expcard" href="heron.html">
+    <h2><svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="#6ee7ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-7px;margin-right:9px"><path d="M10 14.8 9.2 21"/><path d="M11.1 14.9 11.9 21"/><path d="M7 13.6C8.5 12.2 12 12.4 12.6 13.8C12 15.4 8.5 15.6 7 13.6Z" fill="#6ee7ff" stroke="none"/><path d="M11.6 12.6C11.9 9.8 14.4 10 14.2 6.8C14.1 5.7 14.6 5.2 15 5"/><circle cx="15" cy="5" r="0.95" fill="#6ee7ff" stroke="none"/><path d="M15.4 5.3 19 6.7"/></svg>Heron</h2>
+    <div class="role">Swing options &middot; patient, multi-week holds</div>
+    <div class="stats" id="hStats"></div>
+    <canvas class="spark" id="hSpark" aria-hidden="true"></canvas>
+    <span class="chip b">View experiment &rarr;</span>
+  </a>
+</div>
+
+<section>
+  <h2>Why this exists</h2>
+  <p class="mut" style="max-width:68ch">There is no shortage of claims about AI
+  and trading. What is scarce is <i>evidence you can inspect</i>. Vivarium Trades
+  is the opposite of a black box: every strategy is fully disclosed, the pass/fail
+  criteria were registered before the first trade, and losses and software
+  failures are published with the same prominence as wins. Read the
+  <a href="about.html">premise</a>, the <a href="faq.html">honest FAQ</a>, or dive
+  into either experiment above.</p>
+</section>
+
+<div class="legalbox">All figures across this site are <b>hypothetical and
+simulated</b> &mdash; computer models with deliberately pessimistic fill
+assumptions and delayed data. No real money is traded. Nothing here is investment
+advice. See the <a href="disclaimer.html">Disclaimer</a>.</div>
+</div>
+<footer><div class="wrap">
+<p><strong>VIVARIUM TRADES</strong> &mdash; a public research log of autonomous
+AI trading 'creatures' operating <strong>simulated</strong> paper accounts.
+<b>Mayfly</b> day-trades momentum; <b>Heron</b> swing-trades options. Every
+trade, win or lose, is published unedited.</p>
+<p>All results on this site are HYPOTHETICAL AND SIMULATED. No real money is
+traded. Nothing here is investment advice, an offer, or a solicitation; see the
+full <a href="disclaimer.html">Disclaimer &amp; Terms of Use</a> and
+<a href="privacy.html">Privacy Policy</a>. Trading &mdash; especially options
+&mdash; involves substantial risk of loss and is not suitable for everyone.</p>
+<p>This site may display third-party advertising. Advertisers have no influence
+over, and no access to, the systems or their results, and an ad's appearance is
+not an endorsement.</p>
+<p>&copy; 2026 Vivarium Trades &middot; vivariumtrades.com &middot; Data updates
+after each U.S. market session &middot; Contact: via
+<a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
+</div></footer>
+<script>
+const M = {"generated": "2026-06-22 21:59", "window": {"start": "2026-06-12", "days_done": 7, "days_target": 30, "trades_done": 8, "trades_target": 25, "breaker_days": 0}, "kpis": {"equity": 4240.6, "start_equity": 4300.0, "realized_pnl": -394.4, "win_rate": 0.0, "expectancy_r": -1.153, "profit_factor": 0.0, "open_count": 0}, "incident_counts": {"A": 0, "B": 50, "C": 0}, "equity_curve": [{"d": "2026-06-12", "v": 4300.0}, {"d": "2026-06-15", "v": 4300.0}, {"d": "2026-06-16", "v": 4138.57}, {"d": "2026-06-17", "v": 4183.32}, {"d": "2026-06-18", "v": 4249.74}, {"d": "2026-06-19", "v": 4293.36}, {"d": "2026-06-22", "v": 4240.6}], "daily_pnl": [{"d": "2026-06-12", "v": 0.0}, {"d": "2026-06-15", "v": 0.0}, {"d": "2026-06-16", "v": -161.43}, {"d": "2026-06-17", "v": -116.68}, {"d": "2026-06-18", "v": -50.26}, {"d": "2026-06-19", "v": -6.64}, {"d": "2026-06-22", "v": -59.4}], "open_trades": [], "closed_trades": [{"trade_id": "0478da2b-ad25-4931-be64-ef627b8aafff", "signal_id": "2026-06-22:EHGO", "symbol": "EHGO", "entry_ts": "2026-06-22 09:46:14.660", "entry_price": 3.6301, "shares": 238, "stop_price": 3.4495, "stop_placed_ts": "2026-06-22 09:46:14.663", "fill_ts": "2026-06-22 09:46:14.660", "exit_ts": "2026-06-22 09:50:15.523", "exit_price": 3.3805, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -59.4, "sim_slippage": 0.01, "initial_risk": 42.98, "r_multiple": -1.38}, {"trade_id": "b08af285-c357-4483-b3f3-cc13ea343a04", "signal_id": "2026-06-19:LNKS", "symbol": "LNKS", "entry_ts": "2026-06-19 09:25:03.107", "entry_price": 2.6611, "shares": 166, "stop_price": 2.4035, "stop_placed_ts": "2026-06-19 09:25:03.111", "fill_ts": "2026-06-19 09:25:03.107", "exit_ts": "2026-06-19 15:55:55.327", "exit_price": 2.6211, "exit_reason": "TIME", "equity_at_entry": 4300.0, "realized_pnl": -6.64, "sim_slippage": 0.01, "initial_risk": 42.76, "r_multiple": -0.16}, {"trade_id": "6bda61d6-d145-41cc-93b3-d4735fe3fb46", "signal_id": "2026-06-18:LPA", "symbol": "LPA", "entry_ts": "2026-06-18 09:45:35.147", "entry_price": 4.1573, "shares": 230, "stop_price": 3.971, "stop_placed_ts": "2026-06-18 09:45:35.152", "fill_ts": "2026-06-18 09:45:35.147", "exit_ts": "2026-06-18 09:57:37.555", "exit_price": 3.9388, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -50.26, "sim_slippage": 0.01, "initial_risk": 42.85, "r_multiple": -1.17}, {"trade_id": "d92db298-1307-4fc3-9ea1-bb0b34f2fa09", "signal_id": "2026-06-17:CRE", "symbol": "CRE", "entry_ts": "2026-06-17 09:46:05.476", "entry_price": 3.92, "shares": 342, "stop_price": 3.7952, "stop_placed_ts": "2026-06-17 09:46:05.480", "fill_ts": "2026-06-17 09:46:05.476", "exit_ts": "2026-06-17 09:48:05.818", "exit_price": 3.7587, "exit_reason": "STOP", "equity_at_entry": 4278.34, "realized_pnl": -55.16, "sim_slippage": 0.01, "initial_risk": 42.68, "r_multiple": -1.29}, {"trade_id": "fa8b4ca0-d363-4a85-9d1a-65cdfe3d572b", "signal_id": "2026-06-17:GDHG", "symbol": "GDHG", "entry_ts": "2026-06-17 09:46:05.462", "entry_price": 2.045, "shares": 722, "stop_price": 1.9855, "stop_placed_ts": "2026-06-17 09:46:05.467", "fill_ts": "2026-06-17 09:46:05.462", "exit_ts": "2026-06-17 09:52:07.186", "exit_price": 1.9598, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -61.51, "sim_slippage": 0.01, "initial_risk": 42.96, "r_multiple": -1.43}, {"trade_id": "c03fb611-49fa-4fd2-8ad7-71c88a117fd4", "signal_id": "2026-06-16:GDHG", "symbol": "GDHG", "entry_ts": "2026-06-16 09:54:44.056", "entry_price": 2.2532, "shares": 490, "stop_price": 2.1669, "stop_placed_ts": "2026-06-16 09:54:44.060", "fill_ts": "2026-06-16 09:54:44.056", "exit_ts": "2026-06-16 10:01:46.803", "exit_price": 2.1236, "exit_reason": "STOP", "equity_at_entry": 4229.39, "realized_pnl": -63.5, "sim_slippage": 0.01, "initial_risk": 42.29, "r_multiple": -1.5}, {"trade_id": "a3a40343-fc88-4936-ba61-19bf7fc79970", "signal_id": "2026-06-16:CRVO", "symbol": "CRVO", "entry_ts": "2026-06-16 09:45:41.406", "entry_price": 3.225, "shares": 184, "stop_price": 2.9925, "stop_placed_ts": "2026-06-16 09:45:41.410", "fill_ts": "2026-06-16 09:45:41.406", "exit_ts": "2026-06-16 10:02:47.038", "exit_price": 2.9718, "exit_reason": "STOP", "equity_at_entry": 4294.96, "realized_pnl": -46.59, "sim_slippage": 0.01, "initial_risk": 42.78, "r_multiple": -1.09}, {"trade_id": "dd162204-c255-41aa-b8eb-1701f7c722c2", "signal_id": "2026-06-16:CRE", "symbol": "CRE", "entry_ts": "2026-06-16 09:45:41.388", "entry_price": 4.1502, "shares": 168, "stop_price": 3.895, "stop_placed_ts": "2026-06-16 09:45:41.391", "fill_ts": "2026-06-16 09:45:41.388", "exit_ts": "2026-06-16 09:50:43.139", "exit_price": 3.8446, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -51.34, "sim_slippage": 0.01, "initial_risk": 42.87, "r_multiple": -1.2}], "incidents": [{"incident_id": 388, "ts": "2026-06-19 15:44:52.433", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 387, "ts": "2026-06-19 15:43:52.277", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 386, "ts": "2026-06-19 15:42:52.107", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 385, "ts": "2026-06-19 15:41:51.961", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 384, "ts": "2026-06-19 15:40:51.280", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 383, "ts": "2026-06-19 15:39:51.124", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 382, "ts": "2026-06-19 15:38:50.946", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 381, "ts": "2026-06-19 15:37:50.741", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 380, "ts": "2026-06-19 15:36:50.563", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 379, "ts": "2026-06-19 15:35:49.684", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 378, "ts": "2026-06-19 15:34:49.532", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 377, "ts": "2026-06-19 15:33:49.358", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 376, "ts": "2026-06-19 15:32:49.208", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 375, "ts": "2026-06-19 15:31:49.053", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 374, "ts": "2026-06-19 15:30:48.380", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 373, "ts": "2026-06-19 15:29:48.198", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 372, "ts": "2026-06-19 15:28:48.036", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 371, "ts": "2026-06-19 15:27:47.847", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 370, "ts": "2026-06-19 15:26:47.588", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 369, "ts": "2026-06-19 15:25:46.925", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 368, "ts": "2026-06-19 15:24:46.765", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 367, "ts": "2026-06-19 15:23:46.621", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 366, "ts": "2026-06-19 15:22:46.456", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 365, "ts": "2026-06-19 15:21:46.303", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 364, "ts": "2026-06-19 15:20:45.662", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 363, "ts": "2026-06-19 15:19:45.516", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 362, "ts": "2026-06-19 15:18:45.365", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 361, "ts": "2026-06-19 15:17:45.205", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 360, "ts": "2026-06-19 15:16:45.056", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 359, "ts": "2026-06-19 15:15:44.414", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 358, "ts": "2026-06-19 15:14:44.217", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 357, "ts": "2026-06-19 15:13:44.021", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 356, "ts": "2026-06-19 15:12:43.862", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 355, "ts": "2026-06-19 15:11:43.665", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 354, "ts": "2026-06-19 15:10:42.974", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 353, "ts": "2026-06-19 15:09:42.783", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 352, "ts": "2026-06-19 15:08:42.622", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 351, "ts": "2026-06-19 15:07:42.455", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 350, "ts": "2026-06-19 15:06:42.295", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 349, "ts": "2026-06-19 15:05:41.542", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 348, "ts": "2026-06-19 15:04:41.372", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 347, "ts": "2026-06-19 15:03:41.168", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 346, "ts": "2026-06-19 15:02:40.965", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 345, "ts": "2026-06-19 15:01:40.814", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 344, "ts": "2026-06-19 15:00:39.923", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 343, "ts": "2026-06-19 14:59:39.676", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 342, "ts": "2026-06-19 14:58:39.494", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 341, "ts": "2026-06-19 14:57:39.337", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 340, "ts": "2026-06-19 14:56:39.133", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 339, "ts": "2026-06-19 14:55:38.496", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}], "skips": [{"skip_reason": "INVALID_RISK", "n": 388}, {"skip_reason": "SKIPPED_NEAR_CLOSE", "n": 10}], "candidates": [{"ticker": "NXTS", "price": 6.91, "pct": 155.90551, "pillars": 5, "qualifies": true}, {"ticker": "EHGO", "price": 3.73, "pct": 125.55556, "pillars": 5, "qualifies": true}, {"ticker": "CRMT", "price": 3.0097, "pct": 25.41667, "pillars": 5, "qualifies": true}, {"ticker": "RTB", "price": 12.4297, "pct": 21.56098, "pillars": 5, "qualifies": true}, {"ticker": "XCUR", "price": 2.94, "pct": 18.61472, "pillars": 5, "qualifies": true}, {"ticker": "JAGX", "price": 2.7, "pct": 16.0, "pillars": 4, "qualifies": false}, {"ticker": "WYHG", "price": 6.5, "pct": 34.76483, "pillars": 3, "qualifies": false}, {"ticker": "CENN", "price": 3.98, "pct": 19.33535, "pillars": 3, "qualifies": false}, {"ticker": "ORIS", "price": 2.4614, "pct": 18.62745, "pillars": 3, "qualifies": false}, {"ticker": "FRGT", "price": 4.43, "pct": 15.74803, "pillars": 3, "qualifies": false}, {"ticker": "SMCX", "price": 14.0, "pct": 31.13949, "pillars": 2, "qualifies": false}], "feed_date": "2026-06-22"}, H = {"generated": "2026-06-22 21:59", "window": {"start": "2026-06-16", "days_done": 5, "days_target": 60, "trades_done": 0, "trades_target": 20}, "kpis": {"equity": 25000.0, "start_equity": 25000.0, "realized_pnl": 0, "win_rate": null, "expectancy_r": null, "profit_factor": null, "open_count": 0, "pending_count": 1}, "incident_counts": {"A": 0, "B": 0, "C": 0}, "equity_curve": [{"d": "2026-06-16", "v": 25000.0}, {"d": "2026-06-17", "v": 25000.0}, {"d": "2026-06-18", "v": 25000.0}, {"d": "2026-06-19", "v": 25000.0}, {"d": "2026-06-22", "v": 25000.0}], "daily_pnl": [{"d": "2026-06-16", "v": 0.0}, {"d": "2026-06-17", "v": 0.0}, {"d": "2026-06-18", "v": 0.0}, {"d": "2026-06-19", "v": 0.0}, {"d": "2026-06-22", "v": 0.0}], "open_trades": [], "closed_trades": [], "pending": [{"signal_id": "2026-06-16:HOOD", "symbol": "HOOD", "bars_left": 5}], "incidents": [], "skips": []};
+const $ = id => document.getElementById(id);
+const f$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:0}));
+const stat = (l,v) => `<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+function fill(el, d){
+  const r = (d.kpis.equity-d.kpis.start_equity)/d.kpis.start_equity*100;
+  el.innerHTML = stat('Equity', f$(d.kpis.equity))
+    + stat('Return', (r>=0?'+':'')+r.toFixed(1)+'%')
+    + stat('Closed', d.window.trades_done+'/'+d.window.trades_target)
+    + stat('Win rate', d.kpis.win_rate==null?'—':d.kpis.win_rate+'%');
+}
+fill($('mStats'), M); fill($('hStats'), H);
+function spark(id, curve){
+  const el=$(id);
+  if(!curve || curve.length<2){ el.style.display='none'; return; }
+  new Chart(el,{type:'line',data:{labels:curve.map((_,i)=>i),
+    datasets:[{data:curve.map(p=>p.v),borderColor:'#6ee7ff',borderWidth:1.5,
+      pointRadius:0,tension:.3,fill:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{x:{display:false},y:{display:false}}}});
+}
+spark('mSpark', M.equity_curve); spark('hSpark', H.equity_curve);
+</script>
+</body></html>
