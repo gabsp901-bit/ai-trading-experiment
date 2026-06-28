@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mayflytrades.com/sitemap.xml
+Sitemap: https://vivariumtrades.com/sitemap.xml

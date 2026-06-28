@@ -1,6 +1,6 @@
 # MAYFLY — The Open AI Trading Experiment (public site)
 
-Live at **https://mayflytrades.com** (GitHub Pages, custom domain).
+Live at **https://vivariumtrades.com** (GitHub Pages, custom domain).
 
 Static site published via GitHub Pages: a live, fully transparent log of an
 autonomous AI trading system operating a **simulated** paper account.
