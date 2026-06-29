@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mayfly — watch an AI trade, every trade public</title>
+<meta name="description" content="Mayfly is an autonomous AI trading small-cap momentum on a simulated paper account — every position born after the open, dead by the close, under frozen risk rules. Every trade and failure is published. Simulated money — not financial advice.">
+<link rel="canonical" href="https://vivariumtrades.com/mayfly.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236ee7ff%22 stroke-width=%221.8%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 4 L18.9 8 L18.9 16 L12 20 L5.1 16 L5.1 8 Z%22/><circle cx=%2212%22 cy=%2212%22 r=%221.8%22 fill=%22%236ee7ff%22 stroke=%22none%22/></svg>">
+<meta property="og:site_name" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:title" content="Vivarium Trades — open AI trading experiments">
+<meta property="og:description" content="Vivarium Trades runs autonomous AI trading 'creatures' on simulated paper accounts and publishes everything — every trade, statistic, and failure. Mayfly day-trades momentum; Heron swing-trades options. Simulated money, frozen rules, public results. Not financial advice.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://vivariumtrades.com/og.png?v=2026-06-28">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://vivariumtrades.com/mayfly.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://vivariumtrades.com/og.png?v=2026-06-28">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6713026951410554" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<style>
+:root{--bg:#0a0e16;--card:#111726;--card2:#0e1420;--line:rgba(255,255,255,.07);
+--txt:#e6eaf2;--mut:#8b93a7;--grn:#34d399;--red:#f87171;--amb:#fbbf24;--acc:#6ee7ff;
+--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+--display:'Space Grotesk',Inter,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1200px 600px at 80% -10%,#15203a 0%,var(--bg) 55%);
+color:var(--txt);font:15px/1.6 Inter,system-ui,sans-serif;min-height:100vh;
+font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+a{color:var(--acc);text-decoration:none;transition:color .15s}a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.simbanner{position:sticky;top:0;z-index:50;background:rgba(59,47,10,.82);
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+border-bottom:1px solid #6b5618;color:#fde68a;text-align:center;font-weight:600;
+font-size:13px;padding:8px 16px}
+nav{display:flex;gap:22px;align-items:center;padding:18px 0;flex-wrap:wrap}
+nav .brand{font-weight:800;font-size:17px;color:var(--txt);letter-spacing:.2px}
+nav .brand span{color:var(--acc)}
+nav a.lnk{color:var(--mut);font-weight:500;font-size:13.5px;padding:6px 0;transition:color .15s}
+nav a.lnk:hover{color:var(--txt);text-decoration:none}
+nav a.lnk.on{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:border-color .2s}
+.card:hover{border-color:rgba(110,231,255,.22)}
+h1{font-family:var(--display);font-size:34px;line-height:1.2;font-weight:700;letter-spacing:-.5px}
+h2{font-family:var(--display);font-size:22px;font-weight:600;margin:0 0 14px;letter-spacing:-.3px}
+h3{font-size:15px;font-weight:600;margin:18px 0 6px}
+p.mut,li.mut,.mut{color:var(--mut)}
+section{margin:34px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:var(--mut);text-align:left;font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+.chip.g{background:rgba(52,211,153,.12);color:var(--grn)}
+.chip.r{background:rgba(248,113,113,.12);color:var(--red)}
+.chip.a{background:rgba(251,191,36,.12);color:var(--amb)}
+.chip.b{background:rgba(110,231,255,.10);color:var(--acc)}
+.grn{color:var(--grn)}.red{color:var(--red)}.amb{color:var(--amb)}
+footer{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 40px;
+color:var(--mut);font-size:12.5px}
+footer p{margin:0 0 8px}
+.legalbox{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:16px 18px;font-size:12.5px;color:var(--mut);margin:12px 0}
+ul{padding-left:22px}li{margin:5px 0}
+nav a.lnk{position:relative}
+nav a.lnk::after{content:"";position:absolute;left:0;bottom:-4px;height:1px;width:0;
+background:var(--acc);box-shadow:0 0 6px var(--acc);transition:width .2s}
+nav a.lnk:hover::after{width:100%}
+nav .brand:hover{text-shadow:0 0 14px rgba(110,231,255,.45)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+background:linear-gradient(rgba(110,231,255,.022) 1px,transparent 1px) 0 0/100% 58px,
+linear-gradient(90deg,rgba(110,231,255,.022) 1px,transparent 1px) 0 0/58px 100%;
+-webkit-mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%);
+mask:radial-gradient(120% 80% at 50% 0,#000,transparent 72%)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:99px;
+font-weight:600;font-size:14px;border:1px solid rgba(110,231,255,.35);background:rgba(110,231,255,.10);
+color:var(--acc);cursor:pointer;transition:.2s;backdrop-filter:blur(6px)}
+.btn:hover{background:rgba(110,231,255,.18);box-shadow:0 0 26px rgba(110,231,255,.22);
+transform:translateY(-1px);text-decoration:none}
+.btn svg{width:16px;height:16px}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--txt)}
+.btn.ghost:hover{border-color:rgba(110,231,255,.4);box-shadow:none}
+.slabel{font-family:var(--mono);font-size:11px;letter-spacing:2.5px;color:var(--acc);
+text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.slabel::before{content:"";width:24px;height:1px;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease-out,transform .6s ease-out}
+.reveal.in{opacity:1;transform:none}
+details.disc{background:var(--card2);border:1px solid var(--line);border-radius:12px;
+padding:0 16px;margin:10px 0;transition:border-color .2s}
+details.disc[open]{border-color:rgba(110,231,255,.25)}
+details.disc summary{cursor:pointer;padding:14px 0;font-weight:600;font-family:var(--display);
+list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.disc summary::-webkit-details-marker{display:none}
+details.disc summary::after{content:"+";color:var(--acc);font-size:20px;line-height:1;transition:transform .2s}
+details.disc[open] summary::after{transform:rotate(45deg)}
+details.disc .body{padding:0 0 14px}
+@media(max-width:760px){h1{font-size:26px}body{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;
+transition-duration:.001ms!important}}
+
+.hero{position:relative;min-height:calc(100dvh - 120px);display:flex;align-items:center;
+overflow:hidden;margin-bottom:6px}
+.hero #fx{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-in{position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;
+letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;margin-bottom:18px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--grn);
+box-shadow:0 0 10px var(--grn);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.hero h1{font-family:var(--display);font-size:clamp(40px,7vw,84px);line-height:1.02;
+font-weight:700;letter-spacing:-2px;margin:0}
+.hero h1 .g{color:var(--acc);text-shadow:0 0 34px rgba(110,231,255,.4)}
+.hero .lead{max-width:520px;color:var(--mut);font-size:clamp(15px,2.1vw,19px);margin:20px 0 0;line-height:1.55}
+.cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:30px;
+font-family:var(--mono);font-size:12px;letter-spacing:.5px;color:var(--mut)}
+.status span{display:inline-flex;align-items:center;gap:7px}
+.status b{color:var(--txt);font-weight:600}
+.status .sep{width:1px;height:13px;background:var(--line);padding:0}
+.status .sd{width:6px;height:6px;border-radius:50%;background:var(--grn);
+box-shadow:0 0 8px var(--grn);animation:pulse 2s ease-in-out infinite}
+.scroll{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2;
+display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--mut);
+font-family:var(--mono);font-size:10px;letter-spacing:3px}
+.scroll:hover{text-decoration:none;color:var(--acc)}
+.scroll i{width:1px;height:36px;background:linear-gradient(var(--acc),transparent);
+animation:drop 1.8s ease-in-out infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+transition:border-color .2s,transform .2s}
+.kpi:hover{border-color:rgba(110,231,255,.22);transform:translateY(-2px)}
+.kpi .l{color:var(--mut);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px;font-family:var(--mono);letter-spacing:-.5px}
+.kpi .s{font-size:11.5px;color:var(--mut);margin-top:2px}
+.progress{height:8px;background:var(--card2);border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--grn));border-radius:99px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.empty{color:var(--mut);text-align:center;padding:26px 10px;font-size:13px}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:14px}
+.pcard{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:14px;
+padding:18px;overflow:hidden;transition:transform .25s,border-color .25s}
+.pcard::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity .25s;
+background:radial-gradient(140px 90px at 50% -10%,rgba(110,231,255,.12),transparent)}
+.pcard:hover{transform:translateY(-5px);border-color:rgba(110,231,255,.35)}
+.pcard:hover::after{opacity:1}
+.pcard .ic{color:var(--acc);position:relative;z-index:1}
+.pcard .ic svg{width:24px;height:24px}
+.pcard .n{font-family:var(--mono);font-size:10.5px;color:var(--mut);margin-top:12px;letter-spacing:1px}
+.pcard b{display:block;font-family:var(--display);font-size:16px;margin:3px 0 0;position:relative;z-index:1}
+.pcard .d{color:var(--mut);font-size:12.5px;line-height:1.45;max-height:0;opacity:0;overflow:hidden;
+transition:max-height .3s,opacity .3s,margin .3s;margin-top:0}
+.pcard:hover .d{max-height:90px;opacity:1;margin-top:8px}
+@media(hover:none){.pcard .d{max-height:90px;opacity:1;margin-top:8px}}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.rl{background:var(--card2);border:1px solid var(--line);border-left:2px solid var(--acc);
+border-radius:10px;padding:12px 14px;transition:transform .2s,box-shadow .2s}
+.rl:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(110,231,255,.12)}
+.rl span{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--mut)}
+.rl b{display:block;font-family:var(--display);font-size:21px;margin-top:5px}
+.gates{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0}
+.gate{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:18px;
+transition:transform .25s,border-color .25s}
+.gate:hover{transform:translateY(-4px);border-color:rgba(110,231,255,.35)}
+.gate .gi{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--acc)}
+.gate b{display:block;font-family:var(--display);font-size:20px;margin:8px 0 6px}
+.gate p{color:var(--mut);font-size:13px;margin:0}
+@media(max-width:760px){.hero{min-height:auto;padding:54px 0 26px}.hero h1{letter-spacing:-1px}}
+</style></head><body>
+<div class="simbanner">&#9888;&#65039; 100% SIMULATED PAPER TRADING &mdash; no real money is traded anywhere on this site. Educational &amp; research project. Not financial advice.</div>
+<div class="wrap"><nav><a class="brand" href="index.html"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" stroke="#6ee7ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:7px"><path d="M12 4 L18.9 8 L18.9 16 L12 20 L5.1 16 L5.1 8 Z"/><circle cx="12" cy="12" r="1.4" fill="#6ee7ff" stroke="none"/><path d="M12 7.5V9.2M12 14.8V16.5M7.6 10 9 10.8M15 13.2 16.4 14M16.4 10 15 10.8M9 13.2 7.6 14"/></svg>VIVARIUM<span> TRADES</span></a><a class="lnk" href="index.html">APEX</a><a class="lnk" href="overview.html">Overview</a><a class="lnk" href="journal.html">Journal</a><a class="lnk" href="about.html">About</a><a class="lnk" href="faq.html">FAQ</a><a class="lnk" href="disclaimer.html">Disclaimer</a><a class="lnk" href="privacy.html">Privacy</a></nav></div>
+<header class="hero">
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <span class="eyebrow"><i class="dot"></i> Live experiment &middot; simulated capital</span>
+    <h1>Watch a machine<br><span class="g">trade in the open.</span></h1>
+    <p class="lead">An autonomous AI trading small-cap momentum on a simulated
+    account &mdash; every position gone by the bell, every trade published.</p>
+    <div class="cta">
+      <a class="btn" href="#results">See it trading
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn ghost" href="about.html">How it works</a>
+    </div>
+    <div class="status" id="heroStat"></div>
+  </div>
+  <a class="scroll" href="#results" aria-label="Scroll to live results"><span>EXPLORE</span><i></i></a>
+</header>
+
+<div class="wrap">
+
+<section id="results" class="reveal">
+  <h2>Live results <span class="mut" style="font-weight:400;font-size:13px">
+  &mdash; updated after each session &middot; last build <span id="generated"></span> ET</span></h2>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="grid2">
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; trading days</div>
+        <div class="progress"><i id="pbDays"></i></div>
+        <div style="font-size:12.5px" id="pbDaysTxt"></div>
+      </div>
+      <div>
+        <div class="mut" style="font-size:12px">VALIDATION WINDOW &middot; completed trades</div>
+        <div class="progress"><i id="pbTrades"></i></div>
+        <div style="font-size:12.5px" id="pbTradesTxt"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="card"><h2>Equity curve <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="eq" height="220" role="img" aria-label="Simulated equity curve over the validation window"></canvas></div>
+    <div class="card"><h2>Daily P&amp;L <span class="mut" style="font-size:12px;font-weight:400">(simulated $)</span></h2>
+      <canvas id="pnl" height="220" role="img" aria-label="Daily profit and loss, green for gains and red for losses"></canvas></div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><h2>Open positions</h2><div id="openT"></div></div>
+    <div class="card"><h2>Today's candidate queue</h2><div id="candT"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px"><h2>Trade history
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; every closed trade, unedited</span></h2>
+    <div id="histT" style="overflow-x:auto"></div></div>
+
+  <div class="card" style="margin-top:14px"><h2>Incident log
+    <span class="mut" style="font-size:12px;font-weight:400">&mdash; we publish our failures too</span></h2>
+    <div id="incT"></div></div>
+
+  <div class="legalbox">All figures above are <b>hypothetical, simulated
+  results</b> produced by a computer model with deliberately pessimistic fill
+  assumptions and delayed market data. They are not real trades, involve no
+  real money, and do not represent returns any person obtained or could have
+  obtained. See the full <a href="disclaimer.html">Disclaimer</a>.</div>
+</section>
+
+<section id="strategy" class="reveal">
+  <div class="slabel">The strategy &middot; fully open</div>
+  <h2>Five pillars. Every one required.</h2>
+  <p class="mut" style="max-width:600px;margin:-4px 0 18px">Small-cap "gap &amp; go"
+  momentum &mdash; the market's most dangerous regime, chosen because it punishes
+  sloppy risk instantly. Published in full. Copy at your own risk.</p>
+  <div class="pillars">
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></div>
+      <div class="n">01 / GAP</div><b>Up &ge;10% today</b>
+      <div class="d">Momentum already proven, not predicted. Preference &ge;30%.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20v-6M11 20V8M16 20v-9"/></svg></div>
+      <div class="n">02 / VOLUME</div><b>&ge;5&times; average</b>
+      <div class="d">Real crowds, not ghosts. Liquidity has to already be there.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+      <div class="n">03 / CATALYST</div><b>Real news</b>
+      <div class="d">An identifiable catalyst &mdash; earnings, FDA, contracts &mdash; vetted by an LLM.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <div class="n">04 / PRICE</div><b>$2&ndash;$20</b>
+      <div class="d">Room to move; high enough to clear the pennies.</div></div>
+    <div class="pcard"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div class="n">05 / FLOAT</div><b>Under 10M shares</b>
+      <div class="d">Scarcity is the fuel of outsized moves.</div></div>
+  </div>
+
+  <div class="slabel" style="margin-top:34px">Risk rules &middot; frozen in code</div>
+  <h2>Limits the AI cannot touch.</h2>
+  <div class="rules">
+    <div class="rl"><span>RISK / TRADE</span><b>1%</b></div>
+    <div class="rl"><span>INITIAL STOP</span><b>&minus;5%</b></div>
+    <div class="rl"><span>DAILY BREAKER</span><b>&minus;6%</b></div>
+    <div class="rl"><span>FLAT BY</span><b>15:55</b></div>
+    <div class="rl"><span>SHOTS / TICKER</span><b>1</b></div>
+    <div class="rl"><span>FILLS</span><b>HOSTILE</b></div>
+  </div>
+</section>
+
+<section id="method" class="reveal">
+  <div class="slabel">The scientific method</div>
+  <h2>Pre-registered. Falsifiable.</h2>
+  <p class="mut" style="max-width:600px;margin:-4px 0 18px">The hypothesis and
+  pass/fail gates were fixed <b>before the first trade</b>. 30 trading days.
+  Three gates. Public failures.</p>
+  <div class="gates">
+    <div class="gate"><span class="gi">GATE 01</span><b>Mechanical</b>
+      <p>Zero critical failures &mdash; no naked stops, no duplicate orders.</p></div>
+    <div class="gate"><span class="gi">GATE 02</span><b>Risk fidelity</b>
+      <p>Not one trade breaches the 1% / stop / &minus;6% rules. Verified by SQL, not trust.</p></div>
+    <div class="gate"><span class="gi">GATE 03</span><b>Economics</b>
+      <p>Expectancy &ge; +0.05R &middot; profit factor &ge; 1.1 &middot; drawdown &le; 8%.</p></div>
+  </div>
+  <details class="disc"><summary>Anti-cheating commitments</summary><div class="body">
+    <ul>
+      <li><b>Frozen rules:</b> any change to sizing, stops, or the breaker resets the 30-day clock to zero.</li>
+      <li><b>Frozen learning:</b> the self-tuning feedback loop is suspended for the window, so it cannot overfit mid-test.</li>
+      <li><b>Failures are data:</b> software incidents are logged, classified, and published. A hidden failure is a failed experiment.</li>
+      <li><b>Falsifiable:</b> if any gate fails, the result is NO-GO &mdash; as useful as a pass.</li>
+    </ul></div></details>
+  <details class="disc"><summary>Honest limitations</summary><div class="body">
+    <ul class="mut">
+      <li>Market data is ~15 minutes delayed; bid/ask spreads are synthesized. Real-time execution would differ.</li>
+      <li>Simulated orders can't move the market; real orders in micro-caps do.</li>
+      <li>One 30-day window is a small sample. A pass is evidence, not proof.</li>
+    </ul></div></details>
+</section>
+
+</div>
+<footer><div class="wrap">
+<p><strong>VIVARIUM TRADES</strong> &mdash; a public research log of autonomous
+AI trading 'creatures' operating <strong>simulated</strong> paper accounts.
+<b>Mayfly</b> day-trades momentum; <b>Heron</b> swing-trades options. Every
+trade, win or lose, is published unedited.</p>
+<p>All results on this site are HYPOTHETICAL AND SIMULATED. No real money is
+traded. Nothing here is investment advice, an offer, or a solicitation; see the
+full <a href="disclaimer.html">Disclaimer &amp; Terms of Use</a> and
+<a href="privacy.html">Privacy Policy</a>. Trading &mdash; especially options
+&mdash; involves substantial risk of loss and is not suitable for everyone.</p>
+<p>This site may display third-party advertising. Advertisers have no influence
+over, and no access to, the systems or their results, and an ad's appearance is
+not an endorsement.</p>
+<p>&copy; 2026 Vivarium Trades &middot; vivariumtrades.com &middot; Data updates
+after each U.S. market session &middot; Contact: via
+<a href="https://github.com/gabsp901-bit/ai-trading-experiment/issues" rel="nofollow">GitHub issues</a></p>
+</div></footer>
+<script>
+const D = {"generated": "2026-06-28 15:26", "window": {"start": "2026-06-12", "days_done": 11, "days_target": 30, "trades_done": 22, "trades_target": 25, "breaker_days": 1}, "kpis": {"equity": 3969.37, "start_equity": 4300.0, "realized_pnl": -1138.41, "win_rate": 4.5, "expectancy_r": -1.215, "profit_factor": 0.01, "open_count": 0}, "incident_counts": {"A": 0, "B": 50, "C": 0}, "equity_curve": [{"d": "2026-06-12", "v": 4300.0}, {"d": "2026-06-15", "v": 4300.0}, {"d": "2026-06-16", "v": 4138.57}, {"d": "2026-06-17", "v": 4183.32}, {"d": "2026-06-18", "v": 4249.74}, {"d": "2026-06-19", "v": 4293.36}, {"d": "2026-06-22", "v": 4240.6}, {"d": "2026-06-23", "v": 4145.68}, {"d": "2026-06-24", "v": 4240.71}, {"d": "2026-06-25", "v": 4100.25}, {"d": "2026-06-26", "v": 3969.37}], "daily_pnl": [{"d": "2026-06-12", "v": 0.0}, {"d": "2026-06-15", "v": 0.0}, {"d": "2026-06-16", "v": -161.43}, {"d": "2026-06-17", "v": -116.68}, {"d": "2026-06-18", "v": -50.26}, {"d": "2026-06-19", "v": -6.64}, {"d": "2026-06-22", "v": -59.4}, {"d": "2026-06-23", "v": -154.32}, {"d": "2026-06-24", "v": -59.29}, {"d": "2026-06-25", "v": -199.75}, {"d": "2026-06-26", "v": -330.63}], "open_trades": [], "closed_trades": [{"trade_id": "95351957-ae8e-42a0-8693-622cd5208ab2", "signal_id": "2026-06-26:MODD", "symbol": "MODD", "entry_ts": "2026-06-26 09:58:17.324", "entry_price": 4.545, "shares": 799, "stop_price": 4.4935, "stop_placed_ts": "2026-06-26 09:58:17.327", "fill_ts": "2026-06-26 09:58:17.324", "exit_ts": "2026-06-26 10:00:18.862", "exit_price": 4.4036, "exit_reason": "STOP", "equity_at_entry": 4117.0, "realized_pnl": -112.98, "sim_slippage": 0.01, "initial_risk": 41.15, "r_multiple": -2.75}, {"trade_id": "2fede124-8948-4d32-bf44-e94fa70d01df", "signal_id": "2026-06-26:LICN", "symbol": "LICN", "entry_ts": "2026-06-26 09:51:11.007", "entry_price": 2.16, "shares": 326, "stop_price": 2.033, "stop_placed_ts": "2026-06-26 09:51:11.012", "fill_ts": "2026-06-26 09:51:11.007", "exit_ts": "2026-06-26 09:58:17.316", "exit_price": 1.9923, "exit_reason": "STOP", "equity_at_entry": 4152.23, "realized_pnl": -54.67, "sim_slippage": 0.01, "initial_risk": 41.4, "r_multiple": -1.32}, {"trade_id": "6f902385-b11b-433a-90c6-ae96a49b1239", "signal_id": "2026-06-26:IVF", "symbol": "IVF", "entry_ts": "2026-06-26 09:51:10.994", "entry_price": 2.145, "shares": 210, "stop_price": 1.9475, "stop_placed_ts": "2026-06-26 09:51:10.999", "fill_ts": "2026-06-26 09:51:10.994", "exit_ts": "2026-06-26 10:00:19.645", "exit_price": 2.205, "exit_reason": "BREAKER_FLATTEN", "equity_at_entry": 4158.53, "realized_pnl": 12.6, "sim_slippage": 0.01, "initial_risk": 41.48, "r_multiple": 0.3}, {"trade_id": "c2b335db-74b9-469e-a65d-584f5e6a7f3e", "signal_id": "2026-06-26:CANF", "symbol": "CANF", "entry_ts": "2026-06-26 09:36:04.449", "entry_price": 3.3801, "shares": 228, "stop_price": 3.1924, "stop_placed_ts": "2026-06-26 09:36:04.454", "fill_ts": "2026-06-26 09:36:04.449", "exit_ts": "2026-06-26 09:53:12.135", "exit_price": 3.1654, "exit_reason": "STOP", "equity_at_entry": 4285.75, "realized_pnl": -48.95, "sim_slippage": 0.01, "initial_risk": 42.8, "r_multiple": -1.14}, {"trade_id": "734d2ae9-2496-4ea6-945a-d4839b732bcc", "signal_id": "2026-06-26:ZDAI", "symbol": "ZDAI", "entry_ts": "2026-06-26 09:36:04.429", "entry_price": 2.69, "shares": 166, "stop_price": 2.432, "stop_placed_ts": "2026-06-26 09:36:04.434", "fill_ts": "2026-06-26 09:36:04.429", "exit_ts": "2026-06-26 09:38:05.049", "exit_price": 2.3834, "exit_reason": "STOP", "equity_at_entry": 4290.73, "realized_pnl": -50.9, "sim_slippage": 0.01, "initial_risk": 42.83, "r_multiple": -1.19}, {"trade_id": "c6199183-39b5-4f5a-b82e-e14f88256f32", "signal_id": "2026-06-26:SHPH", "symbol": "SHPH", "entry_ts": "2026-06-26 09:36:04.383", "entry_price": 5.44, "shares": 309, "stop_price": 5.3009, "stop_placed_ts": "2026-06-26 09:36:04.396", "fill_ts": "2026-06-26 09:36:04.383", "exit_ts": "2026-06-26 09:37:04.717", "exit_price": 5.1949, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -75.74, "sim_slippage": 0.01, "initial_risk": 42.98, "r_multiple": -1.76}, {"trade_id": "15293fe0-9629-4042-84de-b21239d154a1", "signal_id": "2026-06-25:WAVE", "symbol": "WAVE", "entry_ts": "2026-06-25 09:36:22.272", "entry_price": 10.3403, "shares": 56, "stop_price": 9.5855, "stop_placed_ts": "2026-06-25 09:36:22.276", "fill_ts": "2026-06-25 09:36:22.272", "exit_ts": "2026-06-25 09:46:26.899", "exit_price": 9.4586, "exit_reason": "STOP", "equity_at_entry": 4286.71, "realized_pnl": -49.38, "sim_slippage": 0.01, "initial_risk": 42.27, "r_multiple": -1.17}, {"trade_id": "a8d3af12-6b5e-4e83-91fc-f12a4051a141", "signal_id": "2026-06-25:MIMI", "symbol": "MIMI", "entry_ts": "2026-06-25 09:36:22.254", "entry_price": 4.01, "shares": 81, "stop_price": 3.4822, "stop_placed_ts": "2026-06-25 09:36:22.257", "fill_ts": "2026-06-25 09:36:22.254", "exit_ts": "2026-06-25 10:07:36.405", "exit_price": 3.4541, "exit_reason": "STOP", "equity_at_entry": 4289.14, "realized_pnl": -45.03, "sim_slippage": 0.01, "initial_risk": 42.75, "r_multiple": -1.05}, {"trade_id": "ac2d0ba0-df4c-427e-8396-0f41d9535692", "signal_id": "2026-06-25:FCUV", "symbol": "FCUV", "entry_ts": "2026-06-25 09:36:22.243", "entry_price": 6.2584, "shares": 62, "stop_price": 5.567, "stop_placed_ts": "2026-06-25 09:36:22.246", "fill_ts": "2026-06-25 09:36:22.243", "exit_ts": "2026-06-25 09:49:27.839", "exit_price": 5.4738, "exit_reason": "STOP", "equity_at_entry": 4291.0, "realized_pnl": -48.65, "sim_slippage": 0.01, "initial_risk": 42.87, "r_multiple": -1.13}, {"trade_id": "118cb909-5067-4f85-a981-0875a013d2df", "signal_id": "2026-06-25:KUST", "symbol": "KUST", "entry_ts": "2026-06-25 09:36:22.232", "entry_price": 2.4299, "shares": 300, "stop_price": 2.2866, "stop_placed_ts": "2026-06-25 09:36:22.235", "fill_ts": "2026-06-25 09:36:22.232", "exit_ts": "2026-06-25 09:38:23.107", "exit_price": 2.2409, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -56.7, "sim_slippage": 0.01, "initial_risk": 42.99, "r_multiple": -1.32}, {"trade_id": "f1495c30-86cc-4f63-b107-60f1bef8bf63", "signal_id": "2026-06-24:QNRX", "symbol": "QNRX", "entry_ts": "2026-06-24 09:36:04.733", "entry_price": 4.2101, "shares": 205, "stop_price": 4.0009, "stop_placed_ts": "2026-06-24 09:36:04.737", "fill_ts": "2026-06-24 09:36:04.733", "exit_ts": "2026-06-24 10:13:11.922", "exit_price": 3.9209, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -59.29, "sim_slippage": 0.01, "initial_risk": 42.89, "r_multiple": -1.38}, {"trade_id": "5a7b62d3-900f-4b79-8283-6fb26cfd3851", "signal_id": "2026-06-23:ORIS", "symbol": "ORIS", "entry_ts": "2026-06-23 09:46:05.246", "entry_price": 2.815, "shares": 294, "stop_price": 2.6694, "stop_placed_ts": "2026-06-23 09:46:05.249", "fill_ts": "2026-06-23 09:46:05.246", "exit_ts": "2026-06-23 10:29:21.849", "exit_price": 2.6661, "exit_reason": "STOP", "equity_at_entry": 4284.19, "realized_pnl": -43.78, "sim_slippage": 0.01, "initial_risk": 42.81, "r_multiple": -1.02}, {"trade_id": "77e29c32-c866-41f9-bdab-2ea61e67af34", "signal_id": "2026-06-23:RDGT", "symbol": "RDGT", "entry_ts": "2026-06-23 09:46:05.234", "entry_price": 2.09, "shares": 347, "stop_price": 1.9665, "stop_placed_ts": "2026-06-23 09:46:05.237", "fill_ts": "2026-06-23 09:46:05.234", "exit_ts": "2026-06-23 10:07:14.343", "exit_price": 1.9272, "exit_reason": "STOP", "equity_at_entry": 4294.6, "realized_pnl": -56.49, "sim_slippage": 0.01, "initial_risk": 42.85, "r_multiple": -1.32}, {"trade_id": "ee1e2d28-b678-436b-a11e-727c1a8ee61c", "signal_id": "2026-06-23:HSCS", "symbol": "HSCS", "entry_ts": "2026-06-23 09:46:05.221", "entry_price": 3.3401, "shares": 180, "stop_price": 3.1018, "stop_placed_ts": "2026-06-23 09:46:05.225", "fill_ts": "2026-06-23 09:46:05.221", "exit_ts": "2026-06-23 09:52:07.515", "exit_price": 3.0398, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -54.05, "sim_slippage": 0.01, "initial_risk": 42.89, "r_multiple": -1.26}, {"trade_id": "0478da2b-ad25-4931-be64-ef627b8aafff", "signal_id": "2026-06-22:EHGO", "symbol": "EHGO", "entry_ts": "2026-06-22 09:46:14.660", "entry_price": 3.6301, "shares": 238, "stop_price": 3.4495, "stop_placed_ts": "2026-06-22 09:46:14.663", "fill_ts": "2026-06-22 09:46:14.660", "exit_ts": "2026-06-22 09:50:15.523", "exit_price": 3.3805, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -59.4, "sim_slippage": 0.01, "initial_risk": 42.98, "r_multiple": -1.38}, {"trade_id": "b08af285-c357-4483-b3f3-cc13ea343a04", "signal_id": "2026-06-19:LNKS", "symbol": "LNKS", "entry_ts": "2026-06-19 09:25:03.107", "entry_price": 2.6611, "shares": 166, "stop_price": 2.4035, "stop_placed_ts": "2026-06-19 09:25:03.111", "fill_ts": "2026-06-19 09:25:03.107", "exit_ts": "2026-06-19 15:55:55.327", "exit_price": 2.6211, "exit_reason": "TIME", "equity_at_entry": 4300.0, "realized_pnl": -6.64, "sim_slippage": 0.01, "initial_risk": 42.76, "r_multiple": -0.16}, {"trade_id": "6bda61d6-d145-41cc-93b3-d4735fe3fb46", "signal_id": "2026-06-18:LPA", "symbol": "LPA", "entry_ts": "2026-06-18 09:45:35.147", "entry_price": 4.1573, "shares": 230, "stop_price": 3.971, "stop_placed_ts": "2026-06-18 09:45:35.152", "fill_ts": "2026-06-18 09:45:35.147", "exit_ts": "2026-06-18 09:57:37.555", "exit_price": 3.9388, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -50.26, "sim_slippage": 0.01, "initial_risk": 42.85, "r_multiple": -1.17}, {"trade_id": "d92db298-1307-4fc3-9ea1-bb0b34f2fa09", "signal_id": "2026-06-17:CRE", "symbol": "CRE", "entry_ts": "2026-06-17 09:46:05.476", "entry_price": 3.92, "shares": 342, "stop_price": 3.7952, "stop_placed_ts": "2026-06-17 09:46:05.480", "fill_ts": "2026-06-17 09:46:05.476", "exit_ts": "2026-06-17 09:48:05.818", "exit_price": 3.7587, "exit_reason": "STOP", "equity_at_entry": 4278.34, "realized_pnl": -55.16, "sim_slippage": 0.01, "initial_risk": 42.68, "r_multiple": -1.29}, {"trade_id": "fa8b4ca0-d363-4a85-9d1a-65cdfe3d572b", "signal_id": "2026-06-17:GDHG", "symbol": "GDHG", "entry_ts": "2026-06-17 09:46:05.462", "entry_price": 2.045, "shares": 722, "stop_price": 1.9855, "stop_placed_ts": "2026-06-17 09:46:05.467", "fill_ts": "2026-06-17 09:46:05.462", "exit_ts": "2026-06-17 09:52:07.186", "exit_price": 1.9598, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -61.51, "sim_slippage": 0.01, "initial_risk": 42.96, "r_multiple": -1.43}, {"trade_id": "c03fb611-49fa-4fd2-8ad7-71c88a117fd4", "signal_id": "2026-06-16:GDHG", "symbol": "GDHG", "entry_ts": "2026-06-16 09:54:44.056", "entry_price": 2.2532, "shares": 490, "stop_price": 2.1669, "stop_placed_ts": "2026-06-16 09:54:44.060", "fill_ts": "2026-06-16 09:54:44.056", "exit_ts": "2026-06-16 10:01:46.803", "exit_price": 2.1236, "exit_reason": "STOP", "equity_at_entry": 4229.39, "realized_pnl": -63.5, "sim_slippage": 0.01, "initial_risk": 42.29, "r_multiple": -1.5}, {"trade_id": "a3a40343-fc88-4936-ba61-19bf7fc79970", "signal_id": "2026-06-16:CRVO", "symbol": "CRVO", "entry_ts": "2026-06-16 09:45:41.406", "entry_price": 3.225, "shares": 184, "stop_price": 2.9925, "stop_placed_ts": "2026-06-16 09:45:41.410", "fill_ts": "2026-06-16 09:45:41.406", "exit_ts": "2026-06-16 10:02:47.038", "exit_price": 2.9718, "exit_reason": "STOP", "equity_at_entry": 4294.96, "realized_pnl": -46.59, "sim_slippage": 0.01, "initial_risk": 42.78, "r_multiple": -1.09}, {"trade_id": "dd162204-c255-41aa-b8eb-1701f7c722c2", "signal_id": "2026-06-16:CRE", "symbol": "CRE", "entry_ts": "2026-06-16 09:45:41.388", "entry_price": 4.1502, "shares": 168, "stop_price": 3.895, "stop_placed_ts": "2026-06-16 09:45:41.391", "fill_ts": "2026-06-16 09:45:41.388", "exit_ts": "2026-06-16 09:50:43.139", "exit_price": 3.8446, "exit_reason": "STOP", "equity_at_entry": 4300.0, "realized_pnl": -51.34, "sim_slippage": 0.01, "initial_risk": 42.87, "r_multiple": -1.2}], "incidents": [{"incident_id": 396, "ts": "2026-06-26 10:00:19.580", "class": "B", "component": "breaker", "description": "breaker tripped at -7.64%", "root_cause": "daily loss limit reached", "fix_commit": null}, {"incident_id": 395, "ts": "2026-06-26 09:57:16.372", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.46", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 394, "ts": "2026-06-26 09:56:15.374", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 393, "ts": "2026-06-26 09:55:13.823", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 392, "ts": "2026-06-26 09:54:12.813", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 391, "ts": "2026-06-26 09:53:12.152", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 390, "ts": "2026-06-26 09:52:11.695", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 389, "ts": "2026-06-26 09:51:11.026", "class": "B", "component": "sizing", "description": "MODD: stop 4.4935 not below expected fill 4.47", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 388, "ts": "2026-06-19 15:44:52.433", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 387, "ts": "2026-06-19 15:43:52.277", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 386, "ts": "2026-06-19 15:42:52.107", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 385, "ts": "2026-06-19 15:41:51.961", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 384, "ts": "2026-06-19 15:40:51.280", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 383, "ts": "2026-06-19 15:39:51.124", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 382, "ts": "2026-06-19 15:38:50.946", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 381, "ts": "2026-06-19 15:37:50.741", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 380, "ts": "2026-06-19 15:36:50.563", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 379, "ts": "2026-06-19 15:35:49.684", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 378, "ts": "2026-06-19 15:34:49.532", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 377, "ts": "2026-06-19 15:33:49.358", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 376, "ts": "2026-06-19 15:32:49.208", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 375, "ts": "2026-06-19 15:31:49.053", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 374, "ts": "2026-06-19 15:30:48.380", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 373, "ts": "2026-06-19 15:29:48.198", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 372, "ts": "2026-06-19 15:28:48.036", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 371, "ts": "2026-06-19 15:27:47.847", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 370, "ts": "2026-06-19 15:26:47.588", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 369, "ts": "2026-06-19 15:25:46.925", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 368, "ts": "2026-06-19 15:24:46.765", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 367, "ts": "2026-06-19 15:23:46.621", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 366, "ts": "2026-06-19 15:22:46.456", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 365, "ts": "2026-06-19 15:21:46.303", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 364, "ts": "2026-06-19 15:20:45.662", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 363, "ts": "2026-06-19 15:19:45.516", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 362, "ts": "2026-06-19 15:18:45.365", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 361, "ts": "2026-06-19 15:17:45.205", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 360, "ts": "2026-06-19 15:16:45.056", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 359, "ts": "2026-06-19 15:15:44.414", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 358, "ts": "2026-06-19 15:14:44.217", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 357, "ts": "2026-06-19 15:13:44.021", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 356, "ts": "2026-06-19 15:12:43.862", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 355, "ts": "2026-06-19 15:11:43.665", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 354, "ts": "2026-06-19 15:10:42.974", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 353, "ts": "2026-06-19 15:09:42.783", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 352, "ts": "2026-06-19 15:08:42.622", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 351, "ts": "2026-06-19 15:07:42.455", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 350, "ts": "2026-06-19 15:06:42.295", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 349, "ts": "2026-06-19 15:05:41.542", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 348, "ts": "2026-06-19 15:04:41.372", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}, {"incident_id": 347, "ts": "2026-06-19 15:03:41.168", "class": "B", "component": "sizing", "description": "ATPC: stop 4.0754 not below expected fill 3.8899999999999997", "root_cause": "signal stop above market", "fix_commit": null}], "skips": [{"skip_reason": "INVALID_RISK", "n": 395}, {"skip_reason": "SKIPPED_NEAR_CLOSE", "n": 10}], "candidates": [{"ticker": "EHGO", "price": 3.29, "pct": 54.44444, "pillars": 5, "qualifies": true}, {"ticker": "NXTS", "price": 14.08, "pct": 156.69291, "pillars": 4, "qualifies": false}, {"ticker": "CRMT", "price": 3.22, "pct": 34.375, "pillars": 4, "qualifies": false}, {"ticker": "QXL", "price": 7.25, "pct": 14.96063, "pillars": 4, "qualifies": false}, {"ticker": "BMGL", "price": 6.72, "pct": 988.96451, "pillars": 3, "qualifies": false}, {"ticker": "ICCM", "price": 7.2301, "pct": 38.09259, "pillars": 3, "qualifies": false}, {"ticker": "APLM", "price": 19.488, "pct": 11.37273, "pillars": 3, "qualifies": false}, {"ticker": "BOXL", "price": 3.98, "pct": 11.0553, "pillars": 3, "qualifies": false}, {"ticker": "FTH", "price": 19.9, "pct": 10.54994, "pillars": 3, "qualifies": false}, {"ticker": "SMCX", "price": 11.95, "pct": 20.23576, "pillars": 2, "qualifies": false}], "feed_date": "2026-06-22"};
+const $ = id => document.getElementById(id);
+const fmt$ = v => (v==null?'—':(v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2}));
+$('generated').textContent = D.generated;
+
+const W = D.window;
+$('pbDays').style.width   = Math.min(100, 100*W.days_done/W.days_target)+'%';
+$('pbTrades').style.width = Math.min(100, 100*W.trades_done/W.trades_target)+'%';
+$('pbDaysTxt').textContent   = `${W.days_done} / ${W.days_target} days (window opened ${W.start})`;
+$('pbTradesTxt').textContent = `${W.trades_done} / ${W.trades_target} closed trades`;
+
+const RM = matchMedia('(prefers-reduced-motion:reduce)').matches;
+function countUp(el,target,fmt,dur){
+  if(RM||target==null){el.textContent=(target==null?'—':fmt(target));return;}
+  const t0=performance.now();dur=dur||1100;
+  const step=now=>{let p=Math.min(1,(now-t0)/dur);p=1-Math.pow(1-p,3);
+    el.textContent=fmt(target*p);if(p<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}
+const K = D.kpis, IC = D.incident_counts;
+const ret = (K.equity-K.start_equity)/K.start_equity*100;
+const kpiDefs=[
+ {l:'Simulated equity', t:K.equity, f:v=>fmt$(v), s:`started at ${fmt$(K.start_equity)}`},
+ {l:'Total return', t:ret, f:v=>(v>=0?'+':'')+v.toFixed(2)+'%', s:'net of modeled slippage'},
+ {l:'Realized P&L', t:K.realized_pnl, f:v=>fmt$(v), s:'closed trades only'},
+ {l:'Win rate', t:K.win_rate, f:v=>v.toFixed(0)+'%', s:'honesty, not 100%'},
+ {l:'Expectancy', t:K.expectancy_r, f:v=>(v>=0?'+':'')+v.toFixed(2)+'R', s:'gate ≥ +0.05R'},
+ {l:'Profit factor', t:K.profit_factor, f:v=>v.toFixed(2), s:'gate ≥ 1.1'},
+ {l:'Open positions', t:K.open_count, f:v=>Math.round(v), s:'always 0 overnight'},
+ {l:'Incidents A/B/C', t:null, text:`${IC.A||0} / ${IC.B||0} / ${IC.C||0}`, s:'gate: zero class A'},
+];
+$('kpis').innerHTML = kpiDefs.map((k,i)=>`<div class="kpi"><div class="l">${k.l}</div><div class="v" id="kv${i}">—</div><div class="s">${k.s}</div></div>`).join('');
+kpiDefs.forEach((k,i)=>{const el=$('kv'+i);if(k.text!=null)el.textContent=k.text;else countUp(el,k.t,k.f);});
+
+// hero live status strip
+$('heroStat').innerHTML =
+ `<span><i class="sd"></i>AUTONOMOUS &middot; SIMULATED</span><span class="sep"></span>`
+ +`<span>EQUITY <b>${fmt$(K.equity)}</b></span><span class="sep"></span>`
+ +`<span>RETURN <b class="${ret>=0?'grn':'red'}">${(ret>=0?'+':'')+ret.toFixed(1)}%</b></span>`;
+const axes={ticks:{color:'#8b93a7',font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}};
+if (D.equity_curve.length){
+ new Chart($('eq'),{type:'line',data:{labels:D.equity_curve.map(p=>p.d),
+  datasets:[{data:D.equity_curve.map(p=>p.v),borderColor:'#6ee7ff',
+  backgroundColor:'rgba(110,231,255,.08)',fill:true,tension:.3,pointRadius:2}]},
+  options:{animation:!RM,plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('eq').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">First session: ${W.start}. The curve starts when the data does.</div>`);
+if (D.daily_pnl.length){
+ new Chart($('pnl'),{type:'bar',data:{labels:D.daily_pnl.map(p=>p.d),
+  datasets:[{data:D.daily_pnl.map(p=>p.v),
+  backgroundColor:D.daily_pnl.map(p=>p.v>=0?'rgba(52,211,153,.7)':'rgba(248,113,113,.7)')}]},
+  options:{animation:!RM,plugins:{legend:{display:false}},scales:{x:axes,y:axes}}});
+} else $('pnl').parentElement.insertAdjacentHTML('beforeend',
+  `<div class="empty">No sessions yet — green and red bars land here daily.</div>`);
+
+const table=(rows,cols)=>`<table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr>`+
+ rows.map(r=>`<tr>${cols.map(c=>`<td>${c[1](r)}</td>`).join('')}</tr>`).join('')+'</table>';
+
+$('openT').innerHTML = D.open_trades.length ? table(D.open_trades,[
+ ['Symbol',t=>`<b>${t.symbol}</b>`],['Entry',t=>fmt$(t.entry_price)],
+ ['Shares',t=>t.shares],['Stop',t=>fmt$(t.stop_price)],
+ ['Risk',t=>fmt$(t.initial_risk)]])
+ : '<div class="empty">Flat — no open positions. (By rule, always flat outside market hours.)</div>';
+
+$('candT').innerHTML = D.candidates.length ? table(D.candidates,[
+ ['Ticker',c=>`<b>${c.ticker}</b>`],['Price',c=>fmt$(c.price)],
+ ['Day %',c=>(c.pct>=0?'+':'')+(c.pct??0).toFixed(1)+'%'],
+ ['Pillars',c=>`${c.pillars}/5`],
+ ['Status',c=>c.qualifies?'<span class="chip g">QUEUES</span>':'<span class="chip r">FILTERED</span>']])
+ +`<div class="mut" style="font-size:11.5px;margin-top:8px">Feed date: ${D.feed_date??'—'}.
+ Only 5/5-pillar candidates are eligible; the executor's own gates decide the rest.</div>`
+ : '<div class="empty">No scan published yet today. The morning scan posts before the open.</div>';
+
+const chipFor=r=>({STOP:'r',TIME:'b',BREAKER_FLATTEN:'a',EMERGENCY_EXIT:'a',MANUAL:'a',TARGET:'g'}[r]||'b');
+$('histT').innerHTML = D.closed_trades.length ? table(D.closed_trades,[
+ ['Date',t=>(t.entry_ts||'').slice(0,10)],['Symbol',t=>`<b>${t.symbol}</b>`],
+ ['Entry',t=>fmt$(t.entry_price)],['Exit',t=>fmt$(t.exit_price)],
+ ['Shares',t=>t.shares],
+ ['Exit via',t=>`<span class="chip ${chipFor(t.exit_reason)}">${t.exit_reason||'—'}</span>`],
+ ['P&L',t=>`<span class="${(t.realized_pnl||0)>=0?'grn':'red'}">${fmt$(t.realized_pnl)}</span>`],
+ ['R',t=>t.r_multiple==null?'—':((t.r_multiple>=0?'+':'')+t.r_multiple+'R')]])
+ : '<div class="empty">No closed trades yet. Every one will appear here, winner or loser.</div>';
+
+$('incT').innerHTML = D.incidents.length ? table(D.incidents.slice(0,20),[
+ ['When',i=>(i.ts||'').slice(0,16)],
+ ['Class',i=>`<span class="chip ${i['class']==='A'?'r':i['class']==='B'?'a':'b'}">${i['class']}</span>`],
+ ['Component',i=>i.component],['What happened',i=>i.description]])
+ : '<div class="empty">No incidents logged. (Class A = critical, B = degraded, C = cosmetic.)</div>';
+
+/* ---- scroll reveal ---- */
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  if(RM||!('IntersectionObserver'in window)){els.forEach(e=>e.classList.add('in'));return;}
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+  }),{threshold:.12});
+  els.forEach(e=>io.observe(e));
+})();
+
+/* ---- particle mayfly (Three.js) ---- */
+(function(){
+  const cv=document.getElementById('fx');
+  if(!cv||!window.THREE) return;
+  const TH=window.THREE;
+  const renderer=new TH.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene=new TH.Scene();
+  const cam=new TH.PerspectiveCamera(60,1,0.1,100);
+  cam.position.z=3.6;
+
+  // --- build the mayfly point cloud ---
+  const pts=[], col=[];
+  const C1=new TH.Color(0x6ee7ff), C2=new TH.Color(0x34d399), C3=new TH.Color(0xeafcff);
+  const push=(x,y,z)=>{pts.push(x,y,z);
+    const m=Math.random(), c=m<0.7?C1:(m<0.88?C2:C3);
+    col.push(c.r,c.g,c.b);};
+  const ell=(cx,cy,rx,ry,rot,n)=>{const cs=Math.cos(rot),sn=Math.sin(rot);
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random());
+      let x=rx*r*Math.cos(a),y=ry*r*Math.sin(a);
+      push(cx+x*cs-y*sn, cy+x*sn+y*cs, (Math.random()-0.5)*0.32);}};
+  const cap=(x1,y1,x2,y2,th,n)=>{for(let i=0;i<n;i++){const t=Math.random();
+    const px=x1+(x2-x1)*t, py=y1+(y2-y1)*t;
+    push(px+(Math.random()-0.5)*th, py+(Math.random()-0.5)*th,(Math.random()-0.5)*0.18);}};
+  ell(0,1.05,0.13,0.13,0,70);                 // head
+  cap(0,1.0,0,-1.0,0.05,140);                 // body
+  ell(0.62,0.42,0.62,0.30, 0.42,300); ell(-0.62,0.42,0.62,0.30,-0.42,300); // upper wings
+  ell(0.44,-0.30,0.42,0.20,-0.30,160); ell(-0.44,-0.30,0.42,0.20,0.30,160); // lower wings
+  cap(0,-1.0,0.30,-2.2,0.012,100); cap(0,-1.0,-0.30,-2.2,0.012,100);        // tail filaments
+
+  const geo=new TH.BufferGeometry();
+  geo.setAttribute('position',new TH.Float32BufferAttribute(pts,3));
+  geo.setAttribute('color',new TH.Float32BufferAttribute(col,3));
+  const mat=new TH.PointsMaterial({size:0.05,vertexColors:true,transparent:true,
+    opacity:0.92,blending:TH.AdditiveBlending,depthWrite:false,sizeAttenuation:true});
+  const fly=new TH.Points(geo,mat);
+  const group=new TH.Group(); group.add(fly); group.position.y=0.25; scene.add(group);
+
+  let mx=0,my=0,tx=0,ty=0;
+  addEventListener('pointermove',e=>{
+    mx=(e.clientX/innerWidth-0.5); my=(e.clientY/innerHeight-0.5);},{passive:true});
+
+  function resize(){const w=cv.clientWidth,h=cv.clientHeight;
+    renderer.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();
+    const halfH=Math.tan((cam.fov*Math.PI/180)/2)*cam.position.z, halfW=halfH*cam.aspect;
+    const wide=w>h;
+    // desktop: park the mayfly in the right half, clear of the headline.
+    // narrow: center it, lift it above the copy, and soften it.
+    group.position.x = wide ? halfW*0.55 : 0;
+    group.position.y = wide ? 0.25 : 1.15;
+    mat.opacity = wide ? 0.92 : 0.5;}
+  resize(); addEventListener('resize',resize);
+
+  if(RM){ renderer.render(scene,cam); return; }   // static frame, no loop
+  let t=0;
+  (function loop(){requestAnimationFrame(loop);
+    t+=0.01;
+    tx+=(my*0.5-tx)*0.05; ty+=(mx*0.7-ty)*0.05;
+    group.rotation.x = tx + Math.sin(t)*0.04;
+    group.rotation.y = ty + Math.sin(t*0.6)*0.18;
+    const s=1+Math.sin(t*1.4)*0.015; group.scale.set(s,s,s);
+    renderer.render(scene,cam);
+  })();
+})();
+</script>
+</body></html>
